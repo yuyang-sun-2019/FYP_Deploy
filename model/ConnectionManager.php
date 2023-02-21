@@ -18,7 +18,7 @@ class ConnectionManager {
         // // Return connection object
         // return $conn;
     
-        $url = parse_url(getenv(" mysql://b805ab9b5bfcbd:2b244a70@us-cdbr-east-06.cleardb.net/heroku_496d18e9fc14ec0?reconnect=true"));
+        $url = parse_url(getenv("mysql://b805ab9b5bfcbd:2b244a70@us-cdbr-east-06.cleardb.net/heroku_496d18e9fc14ec0?reconnect=true"));
         
         $server = $url["host"];
         $username = $url["user"];
