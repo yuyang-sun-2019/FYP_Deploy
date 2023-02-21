@@ -1,4 +1,4 @@
-use heroku_496d18e9fc14ec0;
+use heroku_55f1bdb2075fced;
 
 CREATE TABLE `user` (
  `email` varchar(50) NOT NULL,
