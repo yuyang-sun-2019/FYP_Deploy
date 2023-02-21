@@ -1,33 +1,27 @@
 
+
 <?php
 
 class ConnectionManager {
 
     public function getConnection() {
-        // $servername = 'us-cdbr-east-06.cleardb.com';
-        // $username = 'b805ab9b5bfcbd';
-        // $password = '2b244a70';
-        // $dbname = 'heroku_496d18e9fc14ec0';
-        // // mysql://b805ab9b5bfcbd:2b244a70@us-cdbr-east-06.cleardb.net/heroku_496d18e9fc14ec0?reconnect=true
-        
-        // // Create connection
-        // $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);    
+        $servername = 'us-cdbr-east-06.cleardb.com';
+        $username = 'b805ab9b5bfcbd';
+        $password = '2b244a70';
+        $dbname = 'heroku_496d18e9fc14ec0';
+        // mysql://b805ab9b5bfcbd:2b244a70@us-cdbr-east-06.cleardb.net/heroku_496d18e9fc14ec0?reconnect=true
 
-        // $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // if fail, exception will be thrown
+        //return new PDO($dsn, "root", "");  
+        
+        // Create connection
+        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);    
 
-        // // Return connection object
-        // return $conn;
-    
-        $url = parse_url(getenv("mysql://b805ab9b5bfcbd:2b244a70@us-cdbr-east-06.cleardb.net/heroku_496d18e9fc14ec0?reconnect=true"));
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // if fail, exception will be thrown
+
+        // Return connection object
+        return $conn;
+
         
-        $server = $url["host"];
-        $username = $url["user"];
-        $password = $url["pass"];
-        $db = substr($url["path"], 1);
-        
-        $conn = new mysqli($server, $username, $password, $db);
-      
-       
     }
 
 }
