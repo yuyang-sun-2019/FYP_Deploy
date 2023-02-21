@@ -1,3 +1,5 @@
+use heroku_496d18e9fc14ec0db;
+
 CREATE TABLE `user` (
  `email` varchar(50) NOT NULL,
  `hashed_password` varchar(256) ,
