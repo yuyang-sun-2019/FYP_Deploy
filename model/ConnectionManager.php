@@ -20,5 +20,6 @@ class ConnectionManager {
 
         // Return connection object
         return $conn; 
-
+    }
+}
     ?>
