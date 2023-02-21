@@ -4,7 +4,7 @@
 class ConnectionManager {
 
     public function getConnection() {
-        $servername = 'us-cdbr-east-04.cleardb.com';
+        $servername = 'us-cdbr-east-06.cleardb.com';
         $username = 'b805ab9b5bfcbd';
         $password = '2b244a70';
         $dbname = 'heroku_496d18e9fc14ec0db';
