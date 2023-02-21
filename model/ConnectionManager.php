@@ -3,33 +3,34 @@
 
 class ConnectionManager {
 
-    // public function getConnection() {
-    //     $servername = 'us-cdbr-east-06.cleardb.net';
-    //     $username = 'b70ed68d8e3e96';
-    //     $password = '0c9da54c';
-    //     $dbname = 'heroku_55f1bdb2075fced';
+     public function getConnection() {
+         $servername = 'us-cdbr-east-06.cleardb.net';
+         $username = 'b70ed68d8e3e96';
+         $password = '0c9da54c';
+         $dbname = 'heroku_55f1bdb2075fced';
     //     //mysql://b70ed68d8e3e96:0c9da54c@us-cdbr-east-06.cleardb.net/heroku_55f1bdb2075fced?reconnect=true
 
 
-    //     //return new PDO($dsn, "root", "");  
-        
-    //     // Create connection
-    //     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);    
+    //     //return new PDO($dsn, "root", "");
 
-    //     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // if fail, exception will be thrown
+    //     // Create connection
+         $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+
+         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // if fail, exception will be thrown
 
     //     // Return connection object
-    //     return $conn; 
+         return $conn;
 
     //     $url = parse_url(getenv("mysql://b70ed68d8e3e96:0c9da54c@us-cdbr-east-06.cleardb.net/heroku_55f1bdb2075fced?reconnect=true
     //     "));
 
-$server = $url["host"];
-$username = $url["user"];
-$password = $url["pass"];
-$db = substr($url["path"], 1);
 
-$conn = new mysqli($server, $username, $password, $db);
+//$server = $url["host"];
+//$username = $url["user"];
+//$password = $url["pass"];
+//$db = substr($url["path"], 1);
+
+//$conn = new mysqli($server, $username, $password, $db);
     }
-// }
+}
     ?>
