@@ -1,7 +1,6 @@
 
+use postgres://qwzfvmxbujfhbs:01f956c480a7f0365fffbb3ff26a29e1b765779557f84a03aeb06a3b6f9be08a@ec2-3-217-251-77.compute-1.amazonaws.com:5432/d1lqtpv46396rh 
 
-CREATE DATABASE IF NOT EXISTS fyp;
-use fyp;
 
 CREATE TABLE `user` (
  `email` varchar(50) NOT NULL,
