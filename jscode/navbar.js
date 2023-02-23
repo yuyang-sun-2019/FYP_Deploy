@@ -35,10 +35,10 @@ navbar.component('navbar',{
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav">
 						<li class="nav-item">
-							<a class="nav-link" aria-current="page" href="./myreviews.php">Sales Visualisation</a>
+							<a class="nav-link" aria-current="page" href="https://fyp6men.herokuapp.com/sales_visual.php?">Sales Visualisation</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" aria-current="page" href="./myreviews.php">Sales Forecast</a>
+							<a class="nav-link" aria-current="page" href="https://fyp6men.herokuapp.com/salesForecasting/forcasting.html">Sales Forecast</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" aria-current="page" href="./myreviews.php">Sales Reviews</a>
