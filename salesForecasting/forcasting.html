@@ -17,9 +17,9 @@
     - matplotlib
     - scikit-learn
     - scipy
-    - twarc
-    - plotly
-    - ssl
+  # - twarc
+  # - plotly
+  # - ssl
     - openpyxl
     - paths:
        - ./motorvehiclepop2014_2022.xlsx
@@ -29,56 +29,32 @@
        - ./GoogleReview_SentimentScores.csv
 </py-env>
 <body >
+  <label for="charts">Choose charts:</label>
+
+  <select name="charts" id="charts">
+    <option value="LR_carpop" selected="selected">LR_carpop</option>
+    <option value="LR_COE">LR_COE</option>
+    <option value="LR_Covid19">LR_Covid19</option>
+    <option value="LR_License">LR_License</option>
+    <option value="LR_Accident">LR_Accident</option>
+    <option value="LR_Sentiment">LR_Sentiment</option>
+  </select>
+  <button id="search" type="button" pys-onClick="search"> Search </button>
 <div class="container">
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-      <div id="LR_carpop" class="col">
-
-      </div>
-
-      <div id="LR_COE" class="col">
-
-      </div>
-      <div id="LR_Covid19" class="col">
-
-      </div>
-
-  </div>
-</div>
-<br>
-<div class="container">
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-
-      <div id="LR_Accident1" class="col">
-
-      </div>
-      <div id="LR_Accident2" class="col">
-
-      </div>
-      <div id="LR_Accident3" class="col">
-
-      </div>
-
-  </div>
-</div>
-<br>
-<div class="container">
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-
-      <div id="LR_Sentiment1" class="col" >
-
-      </div>
-      <div id="LR_Sentiment2" class="col">
-
-      </div>
-      <div id="LR_Sentiment3" class="col">
-
-      </div>
-
-  </div>
+  <center>
+  <div class="row row-cols-1 row-cols-md-1 g-1" id="output">
+   <h2 id="title"></h2>
+   <div id="intro" style="text-align:left"></div>
+   <div id="dashboard"> </div>
+   <p id="description" style="text-align:left"></p>
+ </div>
+ <center>
 </div>
 
 </body>
 <py-script >
+import js
+from js import document
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -88,8 +64,8 @@ import sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from scipy import stats
-import plotly.graph_objects as go
-from twarc import Twarc2
+#import plotly.graph_objects as go
+#from twarc import Twarc2
 #from nrclex import NRCLex
 
 def LR_carpop():
@@ -110,14 +86,13 @@ def LR_carpop():
     return slope * x + intercept
   mymodel = list(map(myfunc, x))
   fig, ax = plt.subplots()
-  plt.title("Car Population Chart")
+  plt.title("Car Population")
   plt.xlabel("Amount")
-  plt.ylabel("Car")
+  plt.ylabel("Cars")
   plt.scatter(x, y)
   plt.plot(x, mymodel)
   plt.show()
-
-  pyscript.write("LR_carpop",fig)
+  pyscript.write("dashboard",fig)
 
 def LR_COE():
   data0 = pd.read_excel('COE_data.xlsx', sheet_name='final')
@@ -140,13 +115,13 @@ def LR_COE():
 
   mymodel = list(map(myfunc, x))
   fig, ax = plt.subplots()
-  plt.title("COE Chart")
+  plt.title("COE Prices")
   plt.xlabel("Amount")
   plt.ylabel("COE")
   plt.scatter(x, y)
   plt.plot(x, mymodel)
   plt.show()
-  pyscript.write("LR_COE",fig)
+  pyscript.write("dashboard",fig)
 
 def LR_Covid19():
   covid1 = pd.read_excel('Covid-19_SG.xlsx', sheet_name="Sheet13")
@@ -192,7 +167,23 @@ def LR_Covid19():
   plt.plot(x, mymodel)
   plt.show()
 
-  pyscript.write("LR_Covid19",fig)
+  pyscript.write("dashboard",fig)
+
+def LR_License():
+  accidents = pd.read_excel('Accidents.xlsx', sheet_name="license")
+  df = pd.read_excel('Accidents.xlsx', sheet_name="sales")
+  combined = {'Year': accidents['Year'],
+           'Class': accidents['3 and 3A']}
+
+  accident_df = pd.DataFrame(combined)
+  accident_df['Sales'] = df['sales']
+  accident_df = accident_df.dropna()
+  accident_df= accident_df[accident_df['Class'] != 0]
+  x = accident_df['Sales']
+  y = accident_df['Class']
+  pearsons_coefficient = np.corrcoef(x, y)
+  lr1 = sns.lmplot(data=accident_df, x="Sales", y="Class")
+  pyscript.write("dashboard",lr1)
 
 def LR_Accident():
   accidents = pd.read_excel('Accidents.xlsx', sheet_name="license")
@@ -211,7 +202,7 @@ def LR_Accident():
   x = license_3['Sales']
   y = license_3['three']
   lr1 = sns.lmplot(data=license_3, x="Sales", y="three")
-  pyscript.write("LR_Accident1",lr1)
+  #pyscript.write("LR_Accident1",lr1)
 
   X = license_3[['Sales']]
   y = license_3[['three']]
@@ -248,7 +239,7 @@ def LR_Accident():
   x = license_3A['Sales']
   y = license_3A['threeA']
   lr2 = sns.lmplot(data=license_3A, x="Sales", y="threeA")
-  pyscript.write("LR_Accident2",lr2)
+  #pyscript.write("LR_Accident2",lr2)
   #########################################################
   x = license_3A['Sales']
   y = license_3A['threeA']
@@ -270,7 +261,7 @@ def LR_Accident():
   x = df2['Injuries']
   y = df2['Sales']
   lr3=sns.lmplot(data=df2, x="Injuries", y="Sales")
-  pyscript.write("LR_Accident3",lr3)
+  pyscript.write("dashboard",lr3)
 
 def LR_Sentiment():
 
@@ -278,14 +269,96 @@ def LR_Sentiment():
   data2 = data2.dropna()
   correlation = data2.corr()
   lr1=sns.heatmap(correlation,xticklabels=correlation.columns,yticklabels=correlation.columns, cmap="YlGnBu")
-  pyscript.write("LR_Sentiment1",lr1.figure)
-def main():
-  LR_carpop()
-  LR_COE()
-  LR_Covid19()
-  LR_Accident()
-  LR_Sentiment()
+  pyscript.write("dashboard",lr1.figure)
 
-main()
+def createTable(a,b,c,d):
+      tbl = document.createElement('table')
+      tbl.setAttribute('border', '1')
+      tbdy = document.createElement('tbody')
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = a
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = b
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = "Independent variable: “Car population”"
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = d
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tbl.appendChild(tbdy)
+      document.getElementById("intro").append(tbl)
+
+def search(*args,**kwargs):
+  val = document.getElementById('charts').value
+
+  if val == "LR_carpop":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_carpop"
+    LR_carpop()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "LR_COE":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_COE"
+    LR_COE()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as COE prices decrease, service sales decrease. However, looking at the COE bidding results in the recent 2 years, COE prices have been on a steady increase. One possible conclusion after analysing COE prices and car population (our other independent variable), car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “COE Prices”"
+    d = "Data: Y-axis: Land Transport Authority, Results of Bidding Exercises for Certificates of Entitlement (Cat A and Cat B) from 2014 to 2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "LR_Covid19":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Covid19"
+    LR_Covid19()
+    document.getElementById("description").innerHTML= "Based on the graph above, it is observed that as the number of Covid-19 cases increase, the amount of sales decreases. We can attribute this pattern to the fact that most people avoided going out during the pandemic, especially during the lockdown period where most of us were unable to leave our homes. This causes the usage of cars to decrease significantly, which in turn decreases the need for their cars to be repaired."
+
+  if val == "LR_License":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_License"
+    LR_License()
+    document.getElementById("description").innerHTML= "Based on the graph above, as the number of people obtaining their 3 and 3A driver's license increases, the amount of sales increases as well. From this result, we can infer that more people would be driving cars/driving more often due to the obtaining of their licenses. Therefore, this results in a higher probability of the car being worn down or in unfortunate cases, getting into accidents, which increases the need for them to bring their vehicles to the workshop for repair services."
+
+  if val == "LR_Accident":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Accident"
+    LR_Accident()
+    document.getElementById("description").innerHTML= "We decided to perform Linear Regression to see if there was a correlation between the number of injuries/casualties incurred from car accidents and the sales amount. However, based on the results of our analysis, we can conclude that there is no significant relationship between these 2 variables."
+
+  if val == "LR_Sentiment":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Sentiment"
+    LR_Sentiment()
+    document.getElementById("description").innerHTML= "Above shows a heat map, a two-dimensional representation of data in which values are represented by colours, in this case light yellow to dark blue. We have performed sentiment analysis on the Google Reviews data of PRO-JEX that we have collected. By observing the Service Sales column, we believe that the emotions that have the closer relation to Service Sales amount are fear, surprise and negative. Although based on our sentiment analysis, the top common words are mostly positive, it is possible that comments that express fear, surprise and negative emotions in general may have an impact on PRO-JEX's sales"
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Sentiment Scores”"
+    d = "Data: Y-axis: Sentiment Scores derived from all Google Reviews on PRO-JEX  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+search()
 </py-script>
 </html>
