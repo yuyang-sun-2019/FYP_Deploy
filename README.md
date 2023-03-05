@@ -8,3 +8,5 @@ During Account Creation:
 4. Only after sending your registered email to the telebot, hit the "I'm done" button.
 5. The telegram bot should ping you : "Thank you for registering with us :)"
 6. Done!
+
+7.python -m http.server

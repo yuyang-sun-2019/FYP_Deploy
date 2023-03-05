@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+<style media="screen">
+  body {background-color: grey;}
+</style>
+<py-env>
+    - pandas
+    - numpy
+    - seaborn
+    - matplotlib
+    - scikit-learn
+    - scipy
+    #- twarc
+    #- plotly
+    #- ssl
+    - openpyxl
+    - paths:
+       - ./motorvehiclepop2014_2022.xlsx
+       - ./COE_data.xlsx
+       - ./Covid-19_SG.xlsx
+       - ./Accidents.xlsx
+       - ./GoogleReview_SentimentScores.csv
+       - ./emo_tweet.xlsx
+       - ./emo_tweet1.xlsx
+       - ./emo_tweet2.xlsx
+       - ./hwz_main.csv
+       - ./fig/top10wordsEntireDataset.png
+</py-env>
+<body >
+  <label for="charts">Choose charts:</label>
+
+  <select name="charts" id="charts">
+    <option value="LR_carpop" selected="selected">LR_carpop</option>
+    <option value="LR_COE">LR_COE</option>
+    <option value="LR_Covid19">LR_Covid19</option>
+    <option value="LR_License">LR_License</option>
+    <option value="LR_Accident">LR_Accident</option>
+    <option value="LR_Sentiment">LR_Sentiment</option>
+    <option value="General_Sentiment_workshop">General_Sentiment_workshop</option>
+    <option value="General_Sentiment_SG">General_Sentiment_SG</option>
+    <option value="General_Sentiment_ML">General_Sentiment_ML</option>
+    <option value="top10wordsEntireDataset">Top 10 words for Entire Dataset</option>
+    <option value="top10wordsSG">Top 10 words SG</option>
+    <option value="top10wordsML">Top 10 words ML</option>
+  </select>
+  <button id="search" type="button" pys-onClick="search"> Search </button>
+<div class="container">
+  <center>
+  <div class="row row-cols-1 row-cols-md-1 g-1" id="output">
+   <h2 id="title"></h2>
+   <div id="intro" style="text-align:left"></div>
+   <div id="dashboard"> </div>
+
+   <p id="description" style="text-align:left"></p>
+ </div>
+ <center>
+</div>
+
+
+<py-script >
+import js
+from js import document
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy
+import sklearn
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from scipy import stats
+#import plotly.graph_objects as go
+#from twarc import Twarc2
+from sklearn.decomposition import LatentDirichletAllocation as LDA
+from sklearn.feature_extraction.text import CountVectorizer
+import re
+#############################################################################
+stopwords = ["guy", "haha", "ya", "buggi3", "lor", "samsung", "dunno", "abit", "w", "liao",
+             "leh", "myviowner", "lor",
+             "lah", "click", "said:", "gagt", "xiaomi", "mi", "last",
+             "edited:", "lch", "liao", "dont", "expand...", "snipfer", "bro", "ye", "lol",
+             "always", "able", "about", "above", "abst", "ac", "accordance",
+             "according", "accordingly", "across", "act", "actually", "ad", "added", "adj", "ae",
+             "af", "affected", "affecting", "affects", "after", "afterwards", "ag", "again", "against",
+             "ah", "ain", "ain't", "aj", "al", "all", "allow", "allows", "almost", "alone", "along", "already",
+             "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and",
+             "announce", "another", "any", "anybody", "anyhow", "anymore", "anyone", "anything", "anyway", "anyways",
+             "anywhere", "ao", "ap", "apart", "apparently", "appear", "appreciate", "appropriate", "approximately", "ar",
+             "are", "aren", "arent", "aren't", "arise", "around", "as", "a's", "aside", "ask", "asking", "associated",
+             "at", "au", "auth", "av", "available", "aw", "away", "awfully", "ax", "ay", "ba", "back", "bc", "bd", "be",
+             "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "begin", "beginning",
+             "beginnings", "begins", "behind", "being", "believe", "below", "beside", "besides", "best", "better",
+             "between", "beyond", "bi", "bill", "biol", "bj", "bk", "bl", "bn", "both", "bottom", "bp", "br", "brief",
+             "briefly", "bs", "bt", "bu", "but", "bx", "by", "c", "c1", "c2", "c3", "ca", "call", "came", "can", "cannot",
+             "cant", "can't", "cause", "causes", "cc", "cd", "ce", "certain", "certainly", "cf", "cg", "ch", "changes",
+             "ci", "cit", "cj", "cl", "clearly", "cm", "c'mon", "cn", "co", "com", "come", "comes", "con", "concerning",
+             "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could",
+             "couldn", "couldnt", "couldn't", "course", "cp", "cq", "cr", "cry", "cs", "c's", "ct", "cu", "currently",
+             "cv", "cx", "cy", "cz", "d", "d2", "da", "date", "dc", "dd", "de", "definitely", "describe", "described",
+             "despite", "detail", "df", "di", "did", "didn", "didn't", "different", "dj", "dk", "dl", "do", "does",
+             "doesn", "doesn't", "doing", "don", "dun", "didnt", "done", "don't", "down", "downwards", "dp", "dr", "ds", "dt", "du",
+             "due", "during", "dx", "dy", "e", "e2", "e3", "ea", "each", "ec", "ed", "edu", "ee", "ef", "effect", "eg",
+             "ei", "eight", "eighty", "either", "ej", "el", "eleven", "else", "elsewhere", "em", "empty", "en", "end",
+             "ending", "enough", "entirely", "eo", "ep", "eq", "er", "es", "especially", "est", "et", "et-al", "etc",
+             "eu", "ev", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly",
+             "example", "except", "ey", "f", "f2", "fa", "far", "fc", "few", "ff", "fi", "fifteen", "fifth", "fify",
+             "fill", "find", "fire", "first", "five", "fix", "fj", "fl", "fn", "fo", "followed", "following", "follows",
+             "for", "former", "formerly", "forth", "forty", "found", "four", "fr", "from", "front", "fs", "ft", "fu",
+             "full", "further", "furthermore", "fy", "g", "ga", "gave", "ge", "get", "gets", "getting", "gi", "give",
+             "given", "gives", "giving", "gj", "gl", "go", "goes", "going", "gone", "got", "gotten", "gr", "greetings",
+             "gs", "gy", "h", "h2", "h3", "had", "hadn", "hadn't", "happens", "hardly", "has", "hasn", "hasnt", "hasn't",
+             "have", "haven", "haven't", "having", "he", "hed", "he'd", "he'll", "hello", "help", "hence", "her", "here",
+             "hereafter", "hereby", "herein", "heres", "here's", "hereupon", "hers", "herself", "hes", "he's",
+             "hh", "hi", "hid", "him", "himself", "his", "hither", "hj", "ho", "home", "hopefully", "how", "howbeit",
+             "however", "how's", "hr", "hs", "http", "hu", "hundred", "hy", "i", "i2", "i3", "i4", "i6", "i7", "i8",
+             "ia", "ib", "ibid", "ic", "id", "i'd", "ie", "if", "ig", "ignored", "ih", "ii", "ij", "il", "i'll", "im",
+             "i'm", "immediate", "immediately", "importance", "important", "in", "inasmuch", "inc", "indeed", "index",
+             "indicate", "indicated", "indicates", "information", "inner", "insofar", "instead", "interest", "into",
+             "invention", "inward", "io", "ip", "iq", "ir", "is", "isn", "isn't", "it", "itd", "it'd", "it'll", "its",
+             "it's", "itself", "iv", "i've", "ive", "ix", "iy", "iz", "j", "jj", "jr", "js", "jt", "ju", "just", "k", "ke",
+             "keep", "keeps", "kept", "kg", "kj", "km", "know", "known", "knows", "ko", "l", "l2", "la", "largely",
+             "last", "lately", "later", "latter", "latterly", "lb", "lc", "le", "least", "les", "less", "lest", "let",
+             "lets", "let's", "lf", "like", "liked", "likely", "line", "little", "lj", "ll", "ll", "ln", "lo", "look",
+             "looking", "looks", "los", "lr", "ls", "lt", "ltd", "m", "m2", "ma", "made", "mainly", "make", "makes",
+             "many", "may", "maybe", "me", "mean", "means", "meantime", "meanwhile", "merely", "mg", "might", "mightn",
+             "mightn't", "mill", "million", "mine", "miss", "ml", "mn", "mo", "more", "moreover", "most", "mostly",
+             "move", "mr", "mrs", "ms", "mt", "mu", "much", "mug", "must", "mustn", "mustn't", "my", "myself", "n",
+             "n2", "na", "name", "namely", "nay", "nc", "nd", "ne", "near", "nearly", "necessarily", "necessary", "need",
+             "needn", "needn't", "needs", "neither", "never", "nevertheless", "new", "next", "ng", "ni", "nine", "ninety",
+             "nj", "nl", "nn", "no", "nobody", "non", "none", "nonetheless", "noone", "nor", "normally", "nos", "not",
+             "noted", "nothing", "novel", "now", "nowhere", "nr", "ns", "nt", "ny", "o", "oa", "ob", "obtain", "obtained",
+             "obviously", "oc", "od", "of", "off", "often", "og", "oh", "oi", "oj", "ok", "okay", "ol", "old", "om",
+             "omitted", "on", "once", "one", "ones", "only", "onto", "oo", "op", "oq", "or", "ord", "os", "ot", "other",
+             "others", "otherwise", "ou", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "ow",
+             "owing", "own", "ox", "oz", "p", "p1", "p2", "p3", "page", "pagecount", "pages", "par", "part", "particular",
+             "particularly", "pas", "past", "pc", "pd", "pe", "per", "perhaps", "pf", "ph", "pi", "pj", "pk", "pl",
+             "placed", "please", "plus", "pm", "pn", "po", "poorly", "possible", "possibly", "potentially", "pp", "pq",
+             "pr", "predominantly", "present", "presumably", "previously", "primarily", "probably", "promptly", "proud",
+             "provides", "ps", "pt", "pu", "put", "py", "q", "qj", "qu", "que", "quickly", "quite", "qv", "r", "r2", "ra",
+             "ran", "rather", "rc", "rd", "re", "readily", "really", "reasonably", "recent", "recently", "ref", "refs",
+             "regarding", "regardless", "regards", "related", "relatively", "research", "research-articl", "respectively",
+             "resulted", "resulting", "results", "rf", "rh", "ri", "right", "rj", "rl", "rm", "rn", "ro", "rq", "rr", "rs",
+             "rt", "ru", "run", "rv", "ry", "s", "s2", "sa", "said", "same", "saw", "say", "saying", "says", "said", "sc", "sd",
+             "se", "sec", "second", "secondly", "section", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen",
+             "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "sf", "shall", "shan",
+             "shan't", "she", "shed", "she'd", "she'll", "shes", "she's", "should", "shouldn", "shouldn't", "should've",
+             "show", "showed", "shown", "showns", "shows", "si", "side", "significant", "significantly", "similar",
+             "similarly", "since", "sincere", "six", "sixty", "sj", "sl", "slightly", "sm", "sn", "so", "some", "somebody",
+             "somehow", "someone", "somethan", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon",
+             "sorry", "sp", "specifically", "specified", "specify", "specifying", "sq", "sr", "ss", "st", "still", "stop",
+             "strongly", "sub", "substantially", "successfully", "such", "sufficiently", "suggest", "sup", "sure", "sy",
+             "system", "sz", "t", "t1", "t2", "t3", "take", "taken", "taking", "tb", "tc", "td", "te", "tell", "ten",
+             "tends", "tf", "th", "than", "thank", "thanks", "thanx", "that", "that'll", "thats", "that's", "that've",
+             "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "thered",
+             "therefore", "therein", "there'll", "thereof", "therere", "theres", "there's", "thereto", "thereupon",
+             "there've", "these", "they", "theyd", "they'd", "they'll", "theyre", "they're", "they've", "thickv", "thin",
+             "think", "third", "this", "thorough", "thoroughly", "those", "thou", "though", "thoughh", "thousand",
+             "three", "throug", "through", "throughout", "thru", "thus", "ti", "til", "tip", "tj", "tl", "tm", "tn",
+             "to", "together", "too", "took", "top", "toward", "towards", "tp", "tq", "tr", "tried", "tries", "truly",
+             "try", "trying", "ts", "t's", "tt", "tv", "twelve", "twenty", "twice", "two", "tx", "u", "u201d", "ue", "ui",
+             "uj", "uk", "um", "un", "under", "unfortunately", "unless", "unlike", "unlikely", "until", "unto", "uo",
+             "up", "upon", "ups", "ur", "us", "use", "used", "useful", "usefully", "usefulness", "uses", "using", "usually",
+             "ut", "v", "va", "value", "various", "vd", "ve", "ve", "very", "via", "viz", "vj", "vo", "vol", "vols",
+             "volumtype", "vq", "vs", "vt", "vu", "w", "wa", "want", "wants", "was", "wasn", "wasnt", "wasn't", "way",
+             "we", "wed", "we'd", "welcome", "well", "we'll", "well-b", "went", "were", "we're", "weren", "werent",
+             "weren't", "we've", "what", "whatever", "what'll", "whats", "what's", "when", "whence", "whenever", "when's",
+             "where", "whereafter", "whereas", "whereby", "wherein", "wheres", "where's", "whereupon", "wherever",
+             "whether", "which", "while", "whim", "whither", "who", "whod", "whoever", "whole", "who'll", "whom",
+             "whomever", "whos", "who's", "whose", "why", "why's", "wi", "widely", "will", "willing", "wish", "with",
+             "within", "without", "wo", "won", "wonder", "wont", "won't", "words", "world", "would", "wouldn", "wouldnt",
+             "wouldn't", "www", "x", "x1", "x2", "x3", "xf", "xi", "xj", "xk", "xl", "xn", "xo", "xs", "xt", "xv", "xx",
+             "y", "y2", "yes", "yet", "yj", "yl", "you", "youd", "you'd", "you'll", "your", "youre", "you're", "yours",
+             "yourself", "yourselves", "you've", "yr", "ys", "yt", "z", "zero", "zi", "zz",]
+def clean_text(text):
+    if type(text) == np.float:
+        return ""
+    temp = text.lower()
+    temp = re.sub("'", "", temp) # to avoid removing contractions in english
+    temp = re.sub("@[A-Za-z0-9_]+","", temp)
+    temp = re.sub("#[A-Za-z0-9_]+","", temp)
+    temp = re.sub(r'http\S+', '', temp)
+    temp = re.sub('[()!?]', ' ', temp)
+    temp = re.sub('\[.*?\]',' ', temp)
+    temp = temp.split()
+    temp = [w for w in temp if not w in stopwords]
+    temp = " ".join(word for word in temp)
+    return temp
+    def print_topics(model, count_vectorizer, n_top_words):
+        words = count_vectorizer.get_feature_names()
+        for topic_idx, topic in enumerate(model.components_):
+            print("\nTopic #%d:" % topic_idx)
+            print(" ".join([words[i]
+                            for i in topic.argsort()[:-n_top_words - 1:-1]]))
+def check(sentence, words):
+    res = [any([k in s for k in words]) for s in sentence]
+    return [sentence[i] for i in range(0, len(res)) if res[i]]
+    def plot_10_most_common_words(count_data, count_vectorizer, my_title):
+        import matplotlib.pyplot as plt
+        words = count_vectorizer.get_feature_names_out() #get_feature_names() older version
+        total_counts = np.zeros(len(words))
+        for t in count_data:
+            total_counts+=t.toarray()[0]
+
+        count_dict = (zip(words, total_counts))
+        count_dict = sorted(count_dict, key=lambda x:x[1], reverse=True)[0:10]
+        words = [w[0] for w in count_dict]
+        counts = [w[1] for w in count_dict]
+        x_pos = np.arange(len(words))
+
+        plt.figure(2, figsize=(15, 15/1.6180))
+        plt.subplot(title=my_title)
+        sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 2.5})
+        sns.barplot(x_pos, counts, palette='husl')
+        plt.xticks(x_pos, words, rotation=90)
+        plt.xlabel('words')
+        plt.ylabel('counts')
+        plt.show()
+        def plot_10_most_common_words(count_data, count_vectorizer, my_title):
+            import matplotlib.pyplot as plt
+            words = count_vectorizer.get_feature_names_out() #get_feature_names() older version
+            total_counts = np.zeros(len(words))
+            for t in count_data:
+                total_counts+=t.toarray()[0]
+
+            count_dict = (zip(words, total_counts))
+            count_dict = sorted(count_dict, key=lambda x:x[1], reverse=True)[0:10]
+            words = [w[0] for w in count_dict]
+            counts = [w[1] for w in count_dict]
+            x_pos = np.arange(len(words))
+
+            plt.figure(2, figsize=(15, 15/1.6180))
+            plt.subplot(title=my_title)
+            sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 2.5})
+            sns.barplot(x_pos, counts, palette='husl')
+            plt.xticks(x_pos, words, rotation=90)
+            plt.xlabel('words')
+            plt.ylabel('counts')
+            plt.show()
+
+###########################################################
+
+def top10wordsEntireDataset():
+  <!-- df = pd.read_csv('hwz_main.csv')
+  threads_text_list = df['content'].tolist()
+  my_results = [clean_text(txt) for txt in threads_text_list]
+  my_stopwords = ["guy", "haha", "ya", "buggi3", "lor", "samsung", "dunno", "abit", "w", "liao",
+             "leh", "myviowner", "lor", "a", "ws", "told", "asked", "guys", "stuff", "left"
+             "lah", "click", "said:", "gagt", "xiaomi", "mi", "last", "coz", "cos", "day",
+             "lot", "quote", "quoted", "shop", "thing", "bit", "sentsggirls", "car", "workshop",
+             "boss", "edited:", "lch", "liao", "dont", "expand...", "snipfer", "bro", "bros", "ye", "lol",
+             "always", "able", "about", "above", "abst", "ac", "accordance",
+             "according", "accordingly", "across", "act", "actually", "ad", "added", "adj", "ae",
+             "af", "affected", "affecting", "affects", "after", "afterwards", "ag", "again", "against",
+             "ah", "ain", "ain't", "aj", "al", "all", "allow", "allows", "almost", "alone", "along", "already",
+             "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and",
+             "announce", "another", "any", "anybody", "anyhow", "anymore", "anyone", "anything", "anyway", "anyways",
+             "anywhere", "ao", "ap", "apart", "apparently", "appear", "appreciate", "appropriate", "approximately", "ar",
+             "are", "aren", "arent", "aren't", "arise", "around", "as", "a's", "aside", "ask", "asking", "associated",
+             "at", "au", "auth", "av", "available", "aw", "away", "awfully", "ax", "ay", "ba", "back", "bc", "bd", "be",
+             "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "begin", "beginning",
+             "beginnings", "begins", "behind", "being", "believe", "below", "beside", "besides", "best", "better",
+             "between", "beyond", "bi", "bill", "biol", "bj", "bk", "bl", "bn", "both", "bottom", "bp", "br", "brief",
+             "briefly", "bs", "bt", "bu", "but", "bx", "by", "c", "c1", "c2", "c3", "ca", "call", "came", "can", "cannot",
+             "cant", "can't", "cause", "causes", "cc", "cd", "ce", "certain", "certainly", "cf", "cg", "ch", "changes",
+             "ci", "cit", "cj", "cl", "clearly", "cm", "c'mon", "cn", "co", "com", "come", "comes", "con", "concerning",
+             "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could",
+             "couldn", "couldnt", "couldn't", "course", "cp", "cq", "cr", "cry", "cs", "c's", "ct", "cu", "currently",
+             "cv", "cx", "cy", "cz", "d", "d2", "da", "date", "dc", "dd", "de", "definitely", "describe", "described",
+             "despite", "detail", "df", "di", "did", "didn", "didn't", "different", "dj", "dk", "dl", "do", "does",
+             "doesn", "doesn't", "doing", "don", "dun", "didnt", "done", "don't", "down", "downwards", "dp", "dr", "ds", "dt", "du",
+             "due", "during", "dx", "dy", "e", "e2", "e3", "ea", "each", "ec", "ed", "edu", "ee", "ef", "effect", "eg",
+             "ei", "eight", "eighty", "either", "ej", "el", "eleven", "else", "elsewhere", "em", "empty", "en", "end",
+             "ending", "enough", "entirely", "eo", "ep", "eq", "er", "es", "especially", "est", "et", "et-al", "etc",
+             "eu", "ev", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly",
+             "example", "except", "ey", "f", "f2", "fa", "far", "fc", "few", "ff", "fi", "fifteen", "fifth", "fify",
+             "fill", "find", "fire", "first", "five", "fix", "fj", "fl", "fn", "fo", "followed", "following", "follows",
+             "for", "former", "formerly", "forth", "forty", "found", "four", "fr", "from", "front", "fs", "ft", "fu",
+             "full", "further", "furthermore", "fy", "g", "ga", "gave", "ge", "get", "gets", "getting", "gi", "give",
+             "given", "gives", "giving", "gj", "gl", "go", "goes", "going", "gone", "got", "gotten", "gr", "greetings",
+             "gs", "gy", "h", "h2", "h3", "had", "hadn", "hadn't", "happens", "hardly", "has", "hasn", "hasnt", "hasn't",
+             "have", "haven", "haven't", "having", "he", "hed", "he'd", "he'll", "hello", "help", "hence", "her", "here",
+             "hereafter", "hereby", "herein", "heres", "here's", "hereupon", "hers", "herself", "hes", "he's",
+             "hh", "hi", "hid", "him", "himself", "his", "hither", "hj", "ho", "home", "hopefully", "how", "howbeit",
+             "however", "how's", "hr", "hs", "http", "hu", "hundred", "hy", "i", "i2", "i3", "i4", "i6", "i7", "i8",
+             "ia", "ib", "ibid", "ic", "id", "i'd", "ie", "if", "ig", "ignored", "ih", "ii", "ij", "il", "i'll", "im",
+             "i'm", "immediate", "immediately", "importance", "important", "in", "inasmuch", "inc", "indeed", "index",
+             "indicate", "indicated", "indicates", "information", "inner", "insofar", "instead", "interest", "into",
+             "invention", "inward", "io", "ip", "iq", "ir", "is", "isn", "isn't", "it", "itd", "it'd", "it'll", "its",
+             "it's", "itself", "iv", "i've", "ive", "ix", "iy", "iz", "j", "jj", "jr", "js", "jt", "ju", "just", "k", "ke",
+             "keep", "keeps", "kept", "kg", "kj", "km", "know", "known", "knows", "ko", "l", "l2", "la", "largely",
+             "last", "lately", "later", "latter", "latterly", "lb", "lc", "le", "least", "les", "less", "lest", "let",
+             "lets", "let's", "lf", "like", "liked", "likely", "line", "little", "lj", "ll", "ll", "ln", "lo", "look",
+             "looking", "looks", "los", "lr", "ls", "lt", "ltd", "m", "m2", "ma", "made", "mainly", "make", "makes",
+             "many", "may", "maybe", "me", "mean", "means", "meantime", "meanwhile", "merely", "mg", "might", "mightn",
+             "mightn't", "mill", "million", "mine", "miss", "ml", "mn", "mo", "more", "moreover", "most", "mostly",
+             "move", "mr", "mrs", "ms", "mt", "mu", "much", "mug", "must", "mustn", "mustn't", "my", "myself", "n",
+             "n2", "na", "name", "namely", "nay", "nc", "nd", "ne", "near", "nearly", "necessarily", "necessary", "need",
+             "needn", "needn't", "needs", "neither", "never", "nevertheless", "new", "next", "ng", "ni", "nine", "ninety",
+             "nj", "nl", "nn", "no", "nobody", "non", "none", "nonetheless", "noone", "nor", "normally", "nos", "not",
+             "noted", "nothing", "novel", "now", "nowhere", "nr", "ns", "nt", "ny", "o", "oa", "ob", "obtain", "obtained",
+             "obviously", "oc", "od", "of", "off", "often", "og", "oh", "oi", "oj", "ok", "okay", "ol", "old", "om",
+             "omitted", "on", "once", "one", "ones", "only", "onto", "oo", "op", "oq", "or", "ord", "os", "ot", "other",
+             "others", "otherwise", "ou", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "ow",
+             "owing", "own", "ox", "oz", "p", "p1", "p2", "p3", "page", "pagecount", "pages", "par", "part", "particular",
+             "particularly", "pas", "past", "pc", "pd", "pe", "per", "perhaps", "pf", "ph", "pi", "pj", "pk", "pl",
+             "placed", "please", "plus", "pm", "pn", "po", "poorly", "possible", "possibly", "potentially", "pp", "pq",
+             "pr", "predominantly", "present", "presumably", "previously", "primarily", "probably", "promptly", "proud",
+             "provides", "ps", "pt", "pu", "put", "py", "q", "qj", "qu", "que", "quickly", "quite", "qv", "r", "r2", "ra",
+             "ran", "rather", "rc", "rd", "re", "readily", "really", "reasonably", "recent", "recently", "ref", "refs",
+             "regarding", "regardless", "regards", "related", "relatively", "research", "research-articl", "respectively",
+             "resulted", "resulting", "results", "rf", "rh", "ri", "right", "rj", "rl", "rm", "rn", "ro", "rq", "rr", "rs",
+             "rt", "ru", "run", "rv", "ry", "s", "s2", "sa", "said", "same", "saw", "say", "saying", "says", "said", "sc", "sd",
+             "se", "sec", "second", "secondly", "section", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen",
+             "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "sf", "shall", "shan",
+             "shan't", "she", "shed", "she'd", "she'll", "shes", "she's", "should", "shouldn", "shouldn't", "should've",
+             "show", "showed", "shown", "showns", "shows", "si", "side", "significant", "significantly", "similar",
+             "similarly", "since", "sincere", "six", "sixty", "sj", "sl", "slightly", "sm", "sn", "so", "some", "somebody",
+             "somehow", "someone", "somethan", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon",
+             "sorry", "sp", "specifically", "specified", "specify", "specifying", "sq", "sr", "ss", "st", "still", "stop",
+             "strongly", "sub", "substantially", "successfully", "such", "sufficiently", "suggest", "sup", "sure", "sy",
+             "system", "sz", "t", "t1", "t2", "t3", "take", "taken", "taking", "tb", "tc", "td", "te", "tell", "ten",
+             "tends", "tf", "th", "than", "thank", "thanks", "thanx", "that", "that'll", "thats", "that's", "that've",
+             "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "thered",
+             "therefore", "therein", "there'll", "thereof", "therere", "theres", "there's", "thereto", "thereupon",
+             "there've", "these", "they", "theyd", "they'd", "they'll", "theyre", "they're", "they've", "thickv", "thin",
+             "think", "third", "this", "thorough", "thoroughly", "those", "thou", "though", "thoughh", "thousand",
+             "three", "throug", "through", "throughout", "thru", "thus", "ti", "til", "tip", "tj", "tl", "tm", "tn",
+             "to", "together", "too", "took", "top", "toward", "towards", "tp", "tq", "tr", "tried", "tries", "truly",
+             "try", "trying", "ts", "t's", "tt", "tv", "twelve", "twenty", "twice", "two", "tx", "u", "u201d", "ue", "ui",
+             "uj", "uk", "um", "un", "under", "unfortunately", "unless", "unlike", "unlikely", "until", "unto", "uo",
+             "up", "upon", "ups", "ur", "us", "use", "used", "useful", "usefully", "usefulness", "uses", "using", "usually",
+             "ut", "v", "va", "value", "various", "vd", "ve", "ve", "very", "via", "viz", "vj", "vo", "vol", "vols",
+             "volumtype", "vq", "vs", "vt", "vu", "w", "wa", "want", "wants", "was", "wasn", "wasnt", "wasn't", "way",
+             "we", "wed", "we'd", "welcome", "well", "we'll", "well-b", "went", "were", "we're", "weren", "werent",
+             "weren't", "we've", "what", "whatever", "what'll", "whats", "what's", "when", "whence", "whenever", "when's",
+             "where", "whereafter", "whereas", "whereby", "wherein", "wheres", "where's", "whereupon", "wherever",
+             "whether", "which", "while", "whim", "whither", "who", "whod", "whoever", "whole", "who'll", "whom",
+             "whomever", "whos", "who's", "whose", "why", "why's", "wi", "widely", "will", "willing", "wish", "with",
+             "within", "without", "wo", "won", "wonder", "wont", "won't", "words", "world", "would", "wouldn", "wouldnt",
+             "wouldn't", "www", "x", "x1", "x2", "x3", "xf", "xi", "xj", "xk", "xl", "xn", "xo", "xs", "xt", "xv", "xx",
+             "y", "y2", "yes", "yet", "yj", "yl", "you", "youd", "you'd", "you'll", "your", "youre", "you're", "yours",
+             "yourself", "yourselves", "you've", "yr", "ys", "yt", "z", "zero", "zi", "zz",]
+  count_vectorizer = CountVectorizer(stop_words=my_stopwords)
+  count_data = count_vectorizer.fit_transform(my_results)
+  words = count_vectorizer.get_feature_names_out()
+  total_counts = np.zeros(len(words))
+  for t in count_data:
+      total_counts+=t.toarray()[0]
+
+  count_dict = (zip(words, total_counts))
+  count_dict = sorted(count_dict, key=lambda x:x[1], reverse=True)[0:10]
+  words = [w[0] for w in count_dict]
+  counts = [w[1] for w in count_dict]
+  x_pos = np.arange(len(words))
+
+  df = pd.DataFrame (list(zip(words, counts)), columns = ['words',"counts"])
+  lr=sns.barplot(data=df,x='words',y='counts') -->
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/top10wordsEntireDataset.png";
+  imageParent.appendChild(image);
+
+
+def LR_carpop():
+  data0 = pd.read_excel('motorvehiclepop2014_2022.xlsx', sheet_name='final')
+  data0 = data0.dropna()
+  corr=sns.pairplot(data0)
+  lr=sns.lmplot(data=data0, x="Amount", y="  Cars")
+  X = data0[['  Cars']]
+  y = data0['Amount']
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
+
+  x = data0['Amount']
+  y = data0['  Cars']
+
+  slope, intercept, r, p, se = stats.linregress(x, y)
+
+  def myfunc(x):
+    return slope * x + intercept
+  mymodel = list(map(myfunc, x))
+  fig, ax = plt.subplots()
+  plt.title("Car Population")
+  plt.xlabel("Amount")
+  plt.ylabel("Cars")
+  plt.scatter(x, y)
+  plt.plot(x, mymodel)
+  plt.show()
+  pyscript.write("dashboard",fig)
+
+def search(*args,**kwargs):
+  val = document.getElementById('charts').value
+
+  if val == "LR_carpop":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_carpop"
+    LR_carpop()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    #createTable(a,b,c,d)
+
+  if val == "top10wordsEntireDataset":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words Entire Dataset"
+    top10wordsEntireDataset()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+
+  if val == "top10wordsSG":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words Entire Dataset"
+    top10wordsSG()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+
+  if val == "top10wordsML":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words Entire Dataset"
+    top10wordsML()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+
+search()
+</py-script>
+</body>
+</html>
