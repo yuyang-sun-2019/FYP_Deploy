@@ -114,6 +114,7 @@ def getInput(*args,**kwargs):
   user_response=user_response.lower()
   user_response=getKeyWord1(user_response)
   recommender=recommendations(user_response)
+  recommender=recommender.sort_values(by='Car Models', ascending=True)
   csv=Element('csv')
   csv.write(recommender[:])
   document.getElementById('userInput').value=""

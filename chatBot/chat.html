@@ -24,7 +24,7 @@
     <p id="chatlog4" class="chatlog">&nbsp;</p>
     <p id="chatlog3" class="chatlog">&nbsp;</p>
     <p id="chatlog2" class="chatlog">&nbsp;</p>
-    <p id="chatlog1" class="chatlog" >ROBO: What is your car model? For example: Honda, Toyota, Mercedes Benz, BMW ...</p>
+    <p id="chatlog1" class="chatlog" >ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ...</p>
     <!--input type="text" name="chat" id="chatbox" placeholder="Hi there! Type here to talk to me." onfocus="placeHolder()" /-->
     <form onsubmit="return false">
       <input type="text" id="userInput" name="chat" value=""><br>
@@ -91,17 +91,9 @@ def getKeyWord1(sentence):
 
 
 def stochasticRecommender(df):
-    l=len(df)
-    count=l-10
+    df=df.drop_duplicates()
+    return df
 
-    if count < 0:
-
-        return df[:]
-    else:
-        start=random.randint(0, count)
-        end  =start+10
-
-        return df[start:end]
 
 def startChat(*args,**kwargs):
 
@@ -115,7 +107,7 @@ def startChat(*args,**kwargs):
     cnt= document.getElementById('counter').innerHTML
     cntInput=int(document.getElementById('counter').innerHTML)-1
     #console.log(f'print q1: {q1}')
-    if question=="ROBO: What is your car model? For example: Honda, Toyota, Mercedes Benz, BMW ...":
+    if question=="ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ...":
 
       user_response = document.getElementById('output').innerHTML
 
@@ -136,7 +128,7 @@ def startChat(*args,**kwargs):
           console.log(f'invalid input')
 
           c1=Element('chatlog'+cnt)
-          c1.write("ROBO:Please enter a valid car model. For example: Honda, Toyota, Mercedes Benz, BMW ...")
+          c1.write("ROBO:Please enter a valid car model. For example: Honda, Toyota, Mitsubishi, BMW ...")
       else:
           document.getElementById('question').innerHTML= "ROBO: What is the car component for repair? For example:Engine, Camera, Brake,Coolant,Wheel,Battery..."
           document.getElementById('keys').innerHTML=document.getElementById('keys').innerHTML+ " "+ user_response
@@ -190,8 +182,8 @@ def clearbot(*args,**kwargs):
   recommendation.clear()
   document.getElementById('counter').innerHTML= 1
   document.getElementById('keys').innerHTML= ""
-  document.getElementById('question').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mercedes Benz, BMW ..."
-  document.getElementById('chatlog1').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mercedes Benz, BMW ..."
+  document.getElementById('question').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ..."
+  document.getElementById('chatlog1').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ..."
   document.getElementById('chatlog2').innerHTML= "&nbsp;"
   document.getElementById('chatlog3').innerHTML= "&nbsp;"
   document.getElementById('chatlog4').innerHTML= "&nbsp;"
