@@ -9,6 +9,9 @@
 <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 <style media="screen">
   body {background-color: rgb(229, 229, 229);}
+  table, th, td {
+  border: 3px solid black;
+  }
 </style>
 <py-env>
     - pandas
@@ -333,7 +336,7 @@ def top10wordsML():
   image.src = "./fig/top10wordsML.png";
   imageParent.appendChild(image);
 
-###$$$
+###
 def wordCloudGeneral():
   document.getElementById("dashboard").innerHTML=""
   image = document.createElement("img");
@@ -396,9 +399,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "Independent variable: “Car population”"
-    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Service Sales of PRO-JEX from 2014-2022"
     createTable(a,b,c,d)
 
   if val == "LR_COE":
@@ -408,9 +411,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as COE prices decrease, service sales decrease. However, looking at the COE bidding results in the recent 2 years, COE prices have been on a steady increase. One possible conclusion after analysing COE prices and car population (our other independent variable), car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables"
     c = "Independent variable: “COE Prices”"
-    d = "Data: Y-axis: Land Transport Authority, Results of Bidding Exercises for Certificates of Entitlement (Cat A and Cat B) from 2014 to 2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    d = "Data: Y-axis: Land Transport Authority, Results of Bidding Exercises for Certificates of Entitlement (Cat A and Cat B) from 2014 to 2022\n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  X-axis: Service Sales of PRO-JEX from 2014-2022"
     createTable(a,b,c,d)
 
   if val == "LR_Covid19":
@@ -420,9 +423,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "Based on the graph above, it is observed that as the number of Covid-19 cases increase, the amount of sales decreases. We can attribute this pattern to the fact that most people avoided going out during the pandemic, especially during the lockdown period where most of us were unable to leave our homes. This causes the usage of cars to decrease significantly, which in turn decreases the need for their cars to be repaired."
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "independent variable: “Number of covid cases”"
-    d = "data: y-axis: Service Sales of PRO-JEX from 2020-2022  x-axis: Number of Confirmed Covid cases, monthly from 2020 Jan - 2022 Dec"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2020-2022\n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of Confirmed Covid cases, monthly from 2020 Jan - 2022 Dec"
     createTable(a,b,c,d)
 
   if val == "LR_License":
@@ -432,9 +435,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "Based on the graph above, as the number of people obtaining their 3 and 3A driver's license increases, the amount of sales increases as well. From this result, we can infer that more people would be driving cars/driving more often due to the obtaining of their licenses. Therefore, this results in a higher probability of the car being worn down or in unfortunate cases, getting into accidents, which increases the need for them to bring their vehicles to the workshop for repair services."
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "independent variable: “number of licenses”"
-    d = "data: y-axis: Service Sales of PRO-JEX from 2014-2020  x-axis: Number of licenses from Class 3A and 3, from year 2014-2020"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2014-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp x-axis: Number of licenses from Class 3A and 3, from year 2014-2020"
     createTable(a,b,c,d)
 
   if val == "LR_Accident":
@@ -444,9 +447,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "We decided to perform Linear Regression to see if there was a correlation between the number of injuries/casualties incurred from car accidents and the sales amount. However, based on the results of our analysis, we can conclude that there is no significant relationship between these 2 variables."
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "independent variable: “Number of injuries”"
-    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020  x-axis: Number of Injuries incurred from Car accidents, monthly from 2015 Jan to 2020 Dec"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of Injuries incurred from Car accidents, monthly from 2015 Jan to 2020 Dec"
     createTable(a,b,c,d)
 
   if val == "LR_Sentiment":
@@ -456,9 +459,9 @@ def search(*args,**kwargs):
     document.getElementById("description").innerHTML= "Above shows a heat map, a two-dimensional representation of data in which values are represented by colours, in this case light yellow to dark blue. We have performed sentiment analysis on the Google Reviews data of PRO-JEX that we have collected. By observing the Service Sales column, we believe that the emotions that have the closer relation to Service Sales amount are fear, surprise and negative. Although based on our sentiment analysis, the top common words are mostly positive, it is possible that comments that express fear, surprise and negative emotions in general may have an impact on PRO-JEX's sales"
 
     a = "Linear Regression Analysis Using service sales data against various independent variables."
-    b = "Goal: Identify correlation between service sales and independent variables Identify how service sales changes against independent variables "
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "Independent variable: “Sentiment Scores”"
-    d = "Data: Y-axis: Sentiment Scores derived from all Google Reviews on PRO-JEX  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    d = "Data: Y-axis: Sentiment Scores derived from all Google Reviews on PRO-JEX \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Service Sales of PRO-JEX from 2014-2022"
     createTable(a,b,c,d)
 
   if val == "General_Sentiment_workshop":
@@ -470,7 +473,7 @@ def search(*args,**kwargs):
     a = "Vertical Bar Graphs Showing the Count of Emotions Towards Workshops in General"
     b = "Goal: Identify General Sentiments"
     c = "Independent variable:  - "
-    d = "Data:Y-axis: Emotions In NRCLex Library  X-axis: Count"
+    d = "Data:Y-axis: Emotions In NRCLex Library \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  X-axis: Count"
     createTable(a,b,c,d)
 
   if val == "General_Sentiment_SG":
@@ -482,7 +485,7 @@ def search(*args,**kwargs):
     a = "Vertical Bar Graphs Showing the Count of Emotions Towards Singapore’s Workshops"
     b = "Goal: Identify General Sentiments and Compare it with that of Malaysia "
     c = "Independent variable:  - "
-    d = "Data:Y-axis: Emotions In NRCLex Library  X-axis: Count"
+    d = "Data:Y-axis: Emotions In NRCLex Library \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Count"
     createTable(a,b,c,d)
 
   if val == "General_Sentiment_ML":
@@ -494,7 +497,7 @@ def search(*args,**kwargs):
     a = "Vertical Bar Graphs Showing the Count of Emotions Towards Malaysia’s Workshops"
     b = "Goal: Identify General Sentiments and Compare it with that of Singapore "
     c = "Independent variable:  - "
-    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Service Sales of PRO-JEX from 2014-2022"
     createTable(a,b,c,d)
 
   if val == "top10wordsEntireDataset":
@@ -506,7 +509,7 @@ def search(*args,**kwargs):
     a = "10 Most Common Words Associated with Workshops in General"
     b = "Goal: Identify The Popular Topics that are Closely Related with Workshops in General"
     c = "Independent variable: “ - ”"
-    d = "Data:Y-axis: Count of Words X-axis: Words"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Words"
     createTable(a,b,c,d)
 
   if val == "top10wordsSG":
@@ -518,7 +521,7 @@ def search(*args,**kwargs):
     a = "10 Most Common Words Associated with Singapore’s Workshops"
     b = "Goal: Identify The Popular Topics that are Closely Related with Singapore’s workshops"
     c = "Independent variable: “ - ”"
-    d = "Data:Y-axis: Count of Words X-axis: Words"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Words"
     createTable(a,b,c,d)
 
   if val == "top10wordsML":
@@ -530,7 +533,7 @@ def search(*args,**kwargs):
     a = "10 Most Common Words Associated with Malaysia’s Workshops"
     b = "Goal: Identify The Popular Topics that are Closely Related with Malaysia’s workshops"
     c = "Independent variable: “ - ”"
-    d = "Data:Y-axis: Count of Words X-axis: Words"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Words"
     createTable(a,b,c,d)
 ############%%%
   if val == "wordCloudGeneral":
