@@ -43,6 +43,7 @@
   <br>
 <p>List of recommendations by the chatbot</p>
 <p id='csv'></p>
+<p id='info'></p>
 </div>
 <py-script>
 import pandas as pd
@@ -119,7 +120,7 @@ def startChat(*args,**kwargs):
       if(user_response =="0" or user_response =="exit" or user_response =="bye" ):
 
           c1=Element('chatlog'+cnt)
-          c1.write("ROBO:Thank you for chatting with me! If you have any further queries you may call our customer service office at +65 6789 6666")
+          c1.write("ROBO:Thank you for chatting with me! If you have any further queries you may call our customer service office at +65 8668 7676")
           document.getElementById('userInput').disabled = True
           return False
 
@@ -149,13 +150,11 @@ def startChat(*args,**kwargs):
             recommender=df[(df['Car models']==user_response)]
 
             recommender=stochasticRecommender(recommender)
-            print("ROBO:There are the possible services for you car model: \n",recommender)
-            print("ROBO:Thank you for chatting with me!")
 
             csv=Element('csv')
             csv.write(recommender.head(10))
             c1=Element('chatlog'+cnt)
-            c1.write("ROBO:Thank you for chatting with me!")
+            c1.write("ROBO:Thank you for chatting with me! If you have any further queries you may call our customer service office at +65 8668 7676")
             document.getElementById('userInput').disabled = True
 
         user_response1=getKeyWord1(user_response1)
@@ -165,6 +164,8 @@ def startChat(*args,**kwargs):
             print("ROBO: Here is the service recommendation:\n",recommender)
             csv=Element('csv')
             csv.write(recommender.head(10))
+            csv1=Element('info')
+            csv1.write("To book an appointment with us, please whatsapp or call our customer service office at +65 8668 7676")
             document.getElementById('userInput').disabled = True
             return False
         else:
@@ -180,6 +181,8 @@ def startChat(*args,**kwargs):
 def clearbot(*args,**kwargs):
   recommendation=Element('csv')
   recommendation.clear()
+  document.getElementById('info').innerHTML= ""
+
   document.getElementById('counter').innerHTML= 1
   document.getElementById('keys').innerHTML= ""
   document.getElementById('question').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ..."
