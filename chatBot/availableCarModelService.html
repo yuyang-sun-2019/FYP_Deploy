@@ -26,6 +26,25 @@
       box-shadow: 5px 5px 5px grey;
       border-radius: 15px;
     }
+      .column {
+        float: left;
+        width: 33.33%;
+        padding: 5px;
+      }
+      .row {
+      display: flex;
+    }
+
+    .column {
+      flex: 33.33%;
+      padding: 5px;
+    }
+  /* Clear floats after image containers */
+  .row::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
 </style>
 <py-env>
   - pandas
@@ -34,6 +53,13 @@
   - scikit-learn
   - paths:
      - ./dataX.xlsx
+     - ./parts/bumper.jpg
+     - ./parts/condenser.jpg
+     - ./parts/door.jpg
+     - ./parts/fender.jpg
+     - ./parts/headlight.jpg
+     - ./parts/radiator.jpg
+     - ./parts/tailLight.jpg
 
 </py-env>
 <body >
@@ -42,13 +68,50 @@
   <center>
   <p id="chat">ROBO: What is the car component for repair? For example:Engine, Camera, Brake,Coolant,Wheel,Battery...</P>
   <div id="output">
+    <div class="row">
+    <div class="column" id="bumper" value= "bumper"  pys-onClick="getLabel1">
+      <img src="./parts/bumper.jpg" width="100" height="100" >
+    </div>
+    <div class="column" id="condenser" value="condenser" pys-onClick="getLabel2">
+      <img src="./parts/condenser.jpg" width="100" height="100" >
+    </div>
+    <div class="column" id="door" value="door" pys-onClick="getLabel3">
+      <img src="./parts/door.jpg" width="100" height="100">
+    </div>
+    </div>
+
+    <div class="row">
+    <div class="column" id="fender" value="fender" pys-onClick="getLabel4">
+      <img src="./parts/fender.jpg" width="100" height="100">
+    </div>
+    <div class="column" id="headlight" value="headlight" pys-onClick="getLabel5">
+      <img src="./parts/headlight.jpg" width="100" height="100">
+    </div>
+    <div class="column" id="radiator" value="radiator" pys-onClick="getLabel6">
+      <img src="./parts/radiator.jpg" width="100" height="100">
+    </div>
+    </div>
+
+    <div class="row">
+    <div class="column" id="clutch" value="clutch" pys-onClick="getLabel7">
+      <img src="./parts/clutch.jpg" width="100" height="100">
+    </div>
+    <div class="column" id="glass" value="glass" pys-onClick="getLabel8">
+      <img src="./parts/glass.jpg" width="100" height="100">
+    </div>
+    <div class="column" id="tailLight" value="tail Light" pys-onClick="getLabel9">
+      <img src="./parts/tailLight.jpg" width="100" height="100">
+    </div>
+    </div>
+
+
     <input type="text" id="userInput" name="chat" value=""></input>
     <button pys-onClick="getInput" type="button" id="btn-form">Enter</button>
  </div>
  <br>
  <p>List of car models available for service</p>
  <p id='csv'></p>
- <p id='info'></p>
+ <p id='info' hidden>To book an appointment with us, please whatsapp or call our customer service office at<a href="http://wa.me/86687676" target="_blank">+65 8668 7676</a></p>
  <center>
 </div>
 
@@ -113,15 +176,15 @@ def recommendations(title, cosine_sim = cosine_sim):
         for i in top_10_indexes:
             recommended_movies.append(list(df['Car models'])[i])
         recommended_movies_not_in_popular = [*set(recommended_movies)]
-        recommended_movies=[]
+        recommended_movies=["-"]
         for pop in carlist:
             for notpop in recommended_movies_not_in_popular:
                 if pop == notpop:
                     recommended_movies.append(pop)
         recommended_movies = pd.DataFrame({'Car Models':recommended_movies})
         document.getElementById('chat').innerHTML="ROBO: What is the car component for repair? For example:Engine, Camera, Brake,Coolant,Wheel,Battery..."
-        csv1=Element('info')
-        csv1.write("To book an appointment with us, please whatsapp or call our customer service office at +65 8668 7676")
+
+        document.getElementById('info').hidden = ""
     except:
         recommended_movies = ["please enter a valid car component"]
         recommended_movies = pd.DataFrame({' ':[]})
@@ -144,17 +207,115 @@ def getKeyWord1(sentence):
 def getInput(*args,**kwargs):
   csv=Element('csv')
   document.getElementById('csv').innerHTML=""
-  document.getElementById('info').innerHTML= ""
+  document.getElementById("info").hidden= "hidden"
   user_response=document.getElementById('userInput').value
   user_response=user_response.lower()
   user_response=getKeyWord1(user_response)
   recommender=recommendations(user_response)
 
   csv=Element('csv')
-  csv.write(recommender[:])
+  csv.write(recommender[1:])
 
   document.getElementById('userInput').value=""
 
+def getLabel1(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('bumper').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel2(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('condenser').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel3(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('door').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel4(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('fender').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel5(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('headlight').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel6(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('radiator').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel7(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('clutch').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel8(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('glass').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
+
+def getLabel9(*args,**kwargs):
+  document.getElementById('csv').innerHTML=""
+  user_response=document.getElementById('tailLight').getAttribute('value')
+  print(user_response)
+  user_response=user_response.lower()
+  user_response=getKeyWord1(user_response)
+  recommender=recommendations(user_response)
+
+  csv=Element('csv')
+  csv.write(recommender[1:])
 
 input2=componentList()
 

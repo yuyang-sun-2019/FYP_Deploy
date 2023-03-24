@@ -30,7 +30,7 @@
       <input type="text" id="userInput" name="chat" value=""><br>
       <input pys-onClick="getInput" type="submit" id="btn-form" value="submit">
     </form>
-      <button id="clear" type="button" class="button is-danger" pys-onClick="clearbot">Re-Start Chat</button>
+      <button id="clear" type="button" class="button is-danger" pys-onClick="clearbot">Restart Chat</button>
   </div>
 
 
@@ -40,10 +40,11 @@
   <p id="question" hidden></p>
   <p id="keys" hidden></p>
   <br>
-  <br>
-<p>List of recommendations by the chatbot</p>
+<!--p>ROBO Recommendation</p-->
+<center>
 <p id='csv'></p>
-<p id='info'></p>
+<p id='info' hidden>To book an appointment with us, please whatsapp or call our customer service office at<a href="http://wa.me/86687676" target="_blank">+65 8668 7676</a></p>
+</center>
 </div>
 <py-script>
 import pandas as pd
@@ -92,8 +93,19 @@ def getKeyWord1(sentence):
 
 
 def stochasticRecommender(df):
-    df=df.drop_duplicates()
-    return df
+  df=df.drop_duplicates()
+  lista=[]
+  car=df['Car models'].iloc[0]
+  part=df['component list'].iloc[0]
+  lista.append(list(df['type of service']))
+  category = "List of service available for "+car+" "+part
+  listdf=[" "]
+  for services in lista:
+      for service in services:
+          listdf.append("     "+service)
+  df = pd.DataFrame({category:listdf})
+
+  return df
 
 
 def startChat(*args,**kwargs):
@@ -127,9 +139,12 @@ def startChat(*args,**kwargs):
       user_response= getKeyWord(user_response)
       if(user_response not in input1 ):
           console.log(f'invalid input')
-
-          c1=Element('chatlog'+cnt)
-          c1.write("ROBO:Please enter a valid car model. For example: Honda, Toyota, Mitsubishi, BMW ...")
+          try:
+            c1=Element('chatlog'+cnt)
+            c1.write("ROBO:Please enter a valid car model. For example: Honda, Toyota, Mitsubishi, BMW ...")
+          except:
+            c1=Element('chatlog'+"16")
+            c1.write("ROBO:Please restart your chart or whatsapp call our customer service office at +65 86687676 ")
       else:
           document.getElementById('question').innerHTML= "ROBO: What is the car component for repair? For example:Engine, Camera, Brake,Coolant,Wheel,Battery..."
           document.getElementById('keys').innerHTML=document.getElementById('keys').innerHTML+ " "+ user_response
@@ -163,17 +178,21 @@ def startChat(*args,**kwargs):
             recommender=stochasticRecommender(recommender)
             print("ROBO: Here is the service recommendation:\n",recommender)
             csv=Element('csv')
-            csv.write(recommender.head(10))
-            csv1=Element('info')
-            csv1.write("To book an appointment with us, please whatsapp or call our customer service office at +65 8668 7676")
+            csv.write(recommender[1:])
+            document.getElementById('info').hidden = ""
+            c1=Element('chatlog'+str(int(cnt)-1))
+            c1.write("ROBO:Please restart the chat for new queries!")
             document.getElementById('userInput').disabled = True
             return False
         else:
             print("ROBO:Invalid component list, please enter again!")
             print("For example:Engine, Camera, Brake, Coolant, Wheel, Battery...")
-            c1=Element('chatlog'+cnt)
-            c1.write("ROBO:Invalid component list, please enter again! For example:Engine, Camera, Brake, Coolant, Wheel, Battery...")
-
+            try:
+              c1=Element('chatlog'+cnt)
+              c1.write("ROBO:Invalid component list, please enter again! For example:Engine, Camera, Brake, Coolant, Wheel, Battery...")
+            except:
+              c1=Element('chatlog'+"16")
+              c1.write("ROBO:Please restart your chart or whatsapp call our customer service office at +65 86687676 ")
 
     random.shuffle(input1)
     random.shuffle(input2)
@@ -181,8 +200,7 @@ def startChat(*args,**kwargs):
 def clearbot(*args,**kwargs):
   recommendation=Element('csv')
   recommendation.clear()
-  document.getElementById('info').innerHTML= ""
-
+  document.getElementById("info").hidden= "hidden"
   document.getElementById('counter').innerHTML= 1
   document.getElementById('keys').innerHTML= ""
   document.getElementById('question').innerHTML= "ROBO: What is your car model? For example: Honda, Toyota, Mitsubishi, BMW ..."
