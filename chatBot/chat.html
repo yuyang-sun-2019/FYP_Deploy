@@ -43,7 +43,7 @@
 <!--p>ROBO Recommendation</p-->
 <center>
 <p id='csv'></p>
-<p id='info' hidden>To book an appointment with us, please whatsapp or call our customer service office at<a href="http://wa.me/86687676" target="_blank">+65 8668 7676</a></p>
+<p id='info' hidden>To book an appointment with us, please whatsapp or call our customer service office at<a href="http://wa.me/86687676" id="link" target="_blank">+65 8668 7676</a></p>
 </center>
 </div>
 <py-script>
@@ -98,6 +98,9 @@ def stochasticRecommender(df):
   car=df['Car models'].iloc[0]
   part=df['component list'].iloc[0]
   lista.append(list(df['type of service']))
+  name=car+" "+part
+  url="http://127.0.0.1:8888/"+name
+  document.getElementById("link").href=url;
   category = "List of service available for "+car+" "+part
   listdf=[" "]
   for services in lista:
