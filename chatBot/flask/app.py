@@ -25,7 +25,7 @@ def hello():
 def hello_name(name):
     now = datetime.datetime.now()
     print(now.hour, now.minute+1)
-    pywhatkit.sendwhatmsg('+6583193088', 'I need service for '+name, now.hour,now.minute+1,15)
+    pywhatkit.sendwhatmsg('+6586687676', 'I need service for '+name, now.hour,now.minute+1,15)
     return "Hello there, we have whatsapp your query to our Project V2D department"
 
 
