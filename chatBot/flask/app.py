@@ -31,6 +31,6 @@ def hello_name(name):
 
 
 if __name__ == "__main__":
-
-    app.run(debug=True, host='127.0.0.1', port=8888)
+    app.run()
+    #app.run(debug=True, host='127.0.0.1', port=8888)
 #https://github.com/bhavaniravi/flask-tutorial/tree/master/app
