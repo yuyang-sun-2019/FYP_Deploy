@@ -99,8 +99,8 @@ def stochasticRecommender(df):
   part=df['component list'].iloc[0]
   lista.append(list(df['type of service']))
   name=car+" "+part
-  url="http://127.0.0.1:8888/"+name
-  document.getElementById("link").href=url;
+  #url="http://127.0.0.1:8888/"+name
+  #document.getElementById("link").href=url;
   category = "List of service available for "+car+" "+part
   listdf=[" "]
   for services in lista:
