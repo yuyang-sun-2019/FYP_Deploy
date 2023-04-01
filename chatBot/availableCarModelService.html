@@ -68,6 +68,10 @@
   <center>
   <p id="chat">ROBO: What is the car component for repair? For example:Engine, Camera, Brake,Coolant,Wheel,Battery...</P>
   <div id="output">
+
+    <input type="text" id="userInput" name="chat" value=""></input>
+    <button pys-onClick="getInput" type="button" id="btn-form">Enter</button>
+    <p>Alternatively you can click the image of the car part for service</p>
     <div class="row">
     <div class="column" id="bumper" value= "bumper"  pys-onClick="getLabel1">
       <img src="./parts/bumper.jpg" width="100" height="100" >
@@ -103,11 +107,8 @@
       <img src="./parts/tailLight.jpg" width="100" height="100">
     </div>
     </div>
-
-
-    <input type="text" id="userInput" name="chat" value=""></input>
-    <button pys-onClick="getInput" type="button" id="btn-form">Enter</button>
  </div>
+
  <br>
  <p>List of car models available for service</p>
  <p id='csv'></p>
