@@ -41,11 +41,7 @@ navbar.component('navbar',{
 							<a class="nav-link" aria-current="page" href="https://fyp6men.herokuapp.com/salesForecasting/forcasting.html">Sales Forecast</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" aria-current="page" href="./myreviews.php">Sales Reviews</a>
-						</li>
-						<li class="nav-item">
-						<a class="nav-link" aria-current="page" href="./myreviews.php">Chatbot</a>
-					</li>
+							<a class="nav-link" aria-current="page" href="https://fyp6men.herokuapp.com/salesForecasting/chatBot/chat.html">Sales Reviews</a>
 					</ul>
                     <div @click="logout" class="ms-auto p-2 bd-highlight text-light">Logout</div>
 				</div>
