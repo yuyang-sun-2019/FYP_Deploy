@@ -147,6 +147,7 @@ def startChat(*args,**kwargs):
           a.setAttribute('href',desiredLink)
           a.innerHTML = "+65 86687676"
           a.style.color = 'blue'
+          a.target = "_blank"
           p.appendChild(a)
           document.getElementById('chatlog'+str(cnt)).innerHTML=""
           document.getElementById('chatlog'+str(cnt)).append(p)
@@ -168,6 +169,7 @@ def startChat(*args,**kwargs):
             a.setAttribute('href',desiredLink)
             a.innerHTML = "+65 86687676"
             a.style.color = 'blue'
+            a.target = "_blank"
             p.appendChild(a)
             document.getElementById("chatlog16").innerHTML=""
             document.getElementById("chatlog16").append(p)
@@ -189,12 +191,13 @@ def startChat(*args,**kwargs):
         user_response=  document.getElementById('keys').innerHTML.split()[0]
         if(user_response1 =="done" or user_response1 =="exit" or user_response1 =="bye" ):
             p = document.createElement('p');
-            p.innerHTML = 'ROBO:Please restart your chart or whatsapp call our customer service office at '
+            p.innerHTML = 'ROBO:Please restart your chart or click here for our '
             a = document.createElement('a');
-            desiredLink="http://wa.me/86687676"
+            desiredLink="https://fyp6men.herokuapp.com/chatBot/availableCarModelService.html"
             a.setAttribute('href',desiredLink)
-            a.innerHTML = "+65 86687676"
+            a.innerHTML = "car services recommendations"
             a.style.color = 'blue'
+            a.target = "_blank"
             p.appendChild(a)
             document.getElementById('chatlog'+str(cnt)).innerHTML=""
             document.getElementById('chatlog'+str(cnt)).append(p)
@@ -221,12 +224,13 @@ def startChat(*args,**kwargs):
               c1.write("ROBO:Invalid component list, please enter again! For example:Engine, Camera, Brake, Coolant, Wheel, Battery...")
             except:
               p = document.createElement('p');
-              p.innerHTML = 'ROBO:Please restart your chart or whatsapp call our customer service office at '
+              p.innerHTML = 'ROBO:Please restart your chart or click here for our '
               a = document.createElement('a');
-              desiredLink="http://wa.me/86687676"
+              desiredLink="https://fyp6men.herokuapp.com/chatBot/availableCarModelService.html"
               a.setAttribute('href',desiredLink)
-              a.innerHTML = "+65 86687676"
+              a.innerHTML = "car services recommendations"
               a.style.color = 'blue'
+              a.target = "_blank"
               p.appendChild(a)
               document.getElementById("chatlog16").innerHTML=""
               document.getElementById("chatlog16").append(p)
