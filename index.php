@@ -79,7 +79,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Management of Chatbot</h5>
                             <p class="card-text">Manage your chatbot</p>
-                            <a href="#" class="btn btn-outline-light" onclick="setGeo()">Lets go</a>
+                            <a href="https://fyp6men.herokuapp.com/chatBot/chat.html" class="btn btn-outline-light" onclick="setGeo()">Lets go</a>
                         </div>
 
                     </div>
