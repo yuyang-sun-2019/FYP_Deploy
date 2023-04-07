@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+<style media="screen">
+  body {background-color: rgb(229, 229, 229);}
+  table, th, td {
+  border: 3px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  }
+</style>
+<py-env>
+    - pandas
+    - numpy
+    - seaborn
+    - matplotlib
+    - scikit-learn
+    - scipy
+    - openpyxl
+    - paths:
+       - ./motorvehiclepop2014_2022.xlsx
+       - ./COE_data.xlsx
+       - ./Covid-19_SG.xlsx
+       - ./Accidents.xlsx
+       - ./GoogleReview_SentimentScores.csv
+       - ./emo_tweet.xlsx
+       - ./emo_tweet1.xlsx
+       - ./emo_tweet2.xlsx
+       - ./fig/top10wordsEntireDataset.png
+       - ./fig/top10wordsSG.png
+       - ./fig/top10wordsML.png
+       - ./fig/wordCloudGeneral.png
+       - ./fig/wordCloudSG.png
+       - ./fig/wordCloudML.png
+</py-env>
+<body >
+  <label for="charts">Choose charts:</label>
+
+  <select name="charts" id="charts">
+    <option value="LR_carpop" selected="selected">LR_carpop</option>
+    <option value="LR_COE">LR_COE</option>
+    <option value="LR_Covid19">LR_Covid19</option>
+    <option value="LR_License">LR_License</option>
+    <option value="LR_Accident">LR_Accident</option>
+    <option value="LR_Sentiment">LR_Sentiment</option>
+    <option value="General_Sentiment_workshop">General_Sentiment_workshop</option>
+    <option value="General_Sentiment_SG">General_Sentiment_SG</option>
+    <option value="General_Sentiment_ML">General_Sentiment_ML</option>
+    <option value="top10wordsEntireDataset">Top 10 words for Entire Dataset</option>
+    <option value="top10wordsSG">Top 10 words SG</option>
+    <option value="top10wordsML">Top 10 words ML</option>
+    <option value="wordCloudGeneral">General Word Cloud</option>
+    <option value="wordCloudSG">SG Word Cloud</option>
+    <option value="wordCloudML">ML Word Cloud</option>
+  </select>
+  <button id="search" type="button" pys-onClick="search"> Search </button>
+<div class="container">
+  <center>
+  <div class="row row-cols-1 row-cols-md-1 g-1" id="output">
+   <h2 id="title"></h2>
+   <div id="intro" style="text-align:left"></div>
+   <div id="dashboard"> </div>
+   <p id="description" style="text-align:left"></p>
+ </div>
+ <center>
+</div>
+
+
+<py-script >
+import js
+from js import document
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy
+import sklearn
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from scipy import stats
+
+
+
+def LR_carpop():
+  data0 = pd.read_excel('motorvehiclepop2014_2022.xlsx', sheet_name='final')
+  data0 = data0.dropna()
+  corr=sns.pairplot(data0)
+  lr=sns.lmplot(data=data0, x="Amount", y="  Cars")
+  X = data0[['  Cars']]
+  y = data0['Amount']
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
+
+  x = data0['Amount']
+  y = data0['  Cars']
+
+  slope, intercept, r, p, se = stats.linregress(x, y)
+
+  def myfunc(x):
+    return slope * x + intercept
+  mymodel = list(map(myfunc, x))
+  fig, ax = plt.subplots()
+  plt.title("Car Population")
+  plt.xlabel("Cars")
+  plt.ylabel("Amount")
+  plt.scatter(x, y)
+  plt.plot(x, mymodel)
+  plt.show()
+  pyscript.write("dashboard",fig)
+
+def LR_COE():
+  data0 = pd.read_excel('COE_data.xlsx', sheet_name='final')
+  data0 = data0.dropna()
+  import seaborn as sns
+  lr=sns.lmplot(data=data0, x="Amount", y="COE")
+  X = data0[[ 'COE']]
+  y = data0['Amount']
+  from sklearn.model_selection import train_test_split
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=101)
+  from sklearn.linear_model import LinearRegression
+  from scipy import stats
+  x = data0['Amount']
+  y = data0['COE']
+
+  slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+  def myfunc(x):
+    return slope * x + intercept
+
+  mymodel = list(map(myfunc, x))
+  fig, ax = plt.subplots()
+  plt.title("COE Prices")
+  plt.xlabel("COE")
+  plt.ylabel("Amount")
+  plt.scatter(x, y)
+  plt.plot(x, mymodel)
+  plt.show()
+  pyscript.write("dashboard",fig)
+
+def LR_Covid19():
+  covid1 = pd.read_excel('Covid-19_SG.xlsx', sheet_name="Sheet13")
+  covid1 = covid1.dropna()
+  sales1 = pd.read_excel('Covid-19_SG.xlsx', sheet_name="Sheet14")
+  sales1 = sales1.dropna()
+  combined = {'date': covid1['year/month'],
+           'no. of cases': covid1['cases']}
+
+  covidsales = pd.DataFrame(combined)
+  covidsales['Sales'] = sales1['Amount']
+  covidsales = covidsales.dropna()
+  x = covidsales['date']
+  y = covidsales['Sales']
+  lr=sns.lmplot(data=covidsales, x="Sales", y="no. of cases")
+  X = covidsales[['no. of cases']]
+  y = covidsales[['Sales']]
+
+  from sklearn.model_selection import train_test_split
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+                                                      random_state=101)
+  from sklearn.linear_model import LinearRegression
+  from scipy import stats
+
+
+
+  x = covidsales['no. of cases']
+  y = covidsales['Sales']
+  #print(y)
+
+  slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+  #print(slope)
+  def myfunc(x):
+    return slope * x + intercept
+
+  mymodel = list(map(myfunc, x))
+  fig, ax = plt.subplots()
+  plt.title("Covid-19 Chart")
+  plt.xlabel("No of Cases")
+  plt.ylabel("Sales")
+  plt.scatter(x, y)
+  plt.plot(x, mymodel)
+  plt.show()
+
+  pyscript.write("dashboard",fig)
+
+def LR_License():
+  accidents = pd.read_excel('Accidents.xlsx', sheet_name="license")
+  df = pd.read_excel('Accidents.xlsx', sheet_name="sales")
+  combined = {'Year': accidents['Year'],
+           'Class': accidents['3_and_3A']}
+
+  accident_df = pd.DataFrame(combined)
+  accident_df['Sales'] = df['sales']
+  accident_df = accident_df.dropna()
+  accident_df= accident_df[accident_df['Class'] != 0]
+  x = accident_df['Sales']
+  y = accident_df['Class']
+  pearsons_coefficient = np.corrcoef(x, y)
+  lr1 = sns.lmplot(data=accident_df, x="Sales", y="Class")
+  pyscript.write("dashboard",lr1)
+
+def LR_Accident():
+  accidents = pd.read_excel('Accidents.xlsx', sheet_name="license")
+  accidents1 = accidents.fillna(accidents['threeA'].mean())
+  df = pd.read_excel('Accidents.xlsx', sheet_name="sales")
+  combined = {'Year': accidents1['Year'],
+           'Class': accidents1['All Classes']}
+  accident_df = pd.DataFrame(combined)
+  accident_df['Sales'] = df['sales']
+  accident_df = accident_df.dropna()
+  combined = {'Year': accidents1['Year'],
+           'three': accidents1['three']}
+  license_3 = pd.DataFrame(combined)
+  license_3['Sales'] = df['sales']
+  license_3 = license_3.dropna()
+  x = license_3['Sales']
+  y = license_3['three']
+  lr1 = sns.lmplot(data=license_3, x="Sales", y="three")
+  #pyscript.write("LR_Accident1",lr1)
+
+  X = license_3[['Sales']]
+  y = license_3[['three']]
+
+  from sklearn.model_selection import train_test_split
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4,
+                                                      random_state=1)
+  import matplotlib.pyplot as plt
+  from scipy import stats
+
+  x = license_3['Sales']
+  y = license_3['three']
+
+  slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+  def myfunc(x):
+    return slope * x + intercept
+
+  mymodel = list(map(myfunc, x))
+
+  from sklearn import linear_model
+  reg = linear_model.LinearRegression()
+  reg.fit(X_train, y_train)
+  slope_intercept = np.polyfit(x,y,1)
+
+  ###################################################
+  combined = {'Year': accidents1['Year'],
+           'threeA': accidents1['threeA']}
+  license_3A = pd.DataFrame(combined)
+  license_3A['Sales'] = df['sales']
+  license_3A = license_3A.dropna()
+  x = license_3A['Sales']
+  y = license_3A['threeA']
+  x = license_3A['Sales']
+  y = license_3A['threeA']
+  lr2 = sns.lmplot(data=license_3A, x="Sales", y="threeA")
+  #pyscript.write("LR_Accident2",lr2)
+  #########################################################
+  x = license_3A['Sales']
+  y = license_3A['threeA']
+
+  slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+  def myfunc(x):
+    return slope * x + intercept
+
+  mymodel = list(map(myfunc, x))
+  reg = linear_model.LinearRegression()
+  reg.fit(X_train, y_train)
+  slope_intercept = np.polyfit(x,y,1)
+
+
+  df2 = pd.read_excel('Accidents.xlsx', sheet_name="month_injuries")
+  x = df2['Injuries']
+  y = df2['Sales']
+  x = df2['Injuries']
+  y = df2['Sales']
+  lr3=sns.lmplot(data=df2, x="Injuries", y="Sales")
+  pyscript.write("dashboard",lr3)
+
+def LR_Sentiment():
+
+  data2 = pd.read_csv('GoogleReview_SentimentScores.csv')
+  data2 = data2.dropna()
+  correlation = data2.corr()
+  lr1=sns.heatmap(correlation,xticklabels=correlation.columns,yticklabels=correlation.columns, cmap="YlGnBu")
+  pyscript.write("dashboard",lr1.figure)
+
+def generalSentimentWorksop():
+  emo_tweet = pd.read_excel('emo_tweet.xlsx')
+  plt.figure(figsize=(10,6))
+  plt.title('General Sentiments Towards Workshops')
+  sns.set_style('white')
+  sns.set_context(context='notebook',font_scale=1.2)
+  lr=sns.barplot(y='Emotions',x='Count',data=emo_tweet,palette='viridis');
+  pyscript.write("dashboard",lr.figure)
+
+def generalSentimentSG():
+  emo_tweet1 = pd.read_excel('emo_tweet1.xlsx')
+  plt.figure(figsize=(10,6))
+  plt.title('General Sentiments Towards SG Workshops')
+  sns.set_style('white')
+  sns.set_context(context='notebook',font_scale=1.2)
+  lr1=sns.barplot(y='Emotions',x='Count',data=emo_tweet1,palette='viridis')
+  pyscript.write("dashboard",lr1.figure)
+
+def generalSentimentML():
+  emo_tweet2 = pd.read_excel('emo_tweet2.xlsx')
+  plt.figure(figsize=(10,6))
+  plt.title('General Sentiments Towards Msia Workshops')
+  sns.set_style('white')
+  sns.set_context(context='notebook',font_scale=1.2)
+  lr2=sns.barplot(y='Emotions',x='Count',data=emo_tweet2,palette='viridis')
+  pyscript.write("dashboard",lr2.figure)
+
+def top10wordsEntireDataset():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/top10wordsEntireDataset.png";
+  imageParent.appendChild(image);
+
+def top10wordsSG():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/top10wordsSG.png";
+  imageParent.appendChild(image);
+
+def top10wordsML():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/top10wordsML.png";
+  imageParent.appendChild(image);
+
+###
+def wordCloudGeneral():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/wordCloudGeneral.png";
+  imageParent.appendChild(image);
+
+def wordCloudSG():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/wordCloudSG.png";
+  imageParent.appendChild(image);
+
+def wordCloudML():
+  document.getElementById("dashboard").innerHTML=""
+  image = document.createElement("img");
+  imageParent = document.getElementById("dashboard");
+  image.src = "./fig/wordCloudML.png";
+  imageParent.appendChild(image);
+def createTable(a,b,c,d):
+      tbl = document.createElement('table')
+      tbl.setAttribute('border', '1')
+      tbdy = document.createElement('tbody')
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = a
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = b
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = "Independent variable: “Car population”"
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tr = document.createElement('tr')
+      td = document.createElement('td')
+      td.innerText = d
+      tr.appendChild(td)
+      tbdy.appendChild(tr)
+
+      tbl.appendChild(tbdy)
+      document.getElementById("intro").append(tbl)
+
+def search(*args,**kwargs):
+  val = document.getElementById('charts').value
+
+  if val == "LR_carpop":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_carpop"
+    LR_carpop()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "Independent variable: “Car population”"
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "LR_COE":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_COE"
+    LR_COE()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as COE prices decrease, service sales decrease. However, looking at the COE bidding results in the recent 2 years, COE prices have been on a steady increase. One possible conclusion after analysing COE prices and car population (our other independent variable), car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables"
+    c = "Independent variable: “COE Prices”"
+    d = "Data: Y-axis: Land Transport Authority, Results of Bidding Exercises for Certificates of Entitlement (Cat A and Cat B) from 2014 to 2022\n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "LR_Covid19":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Covid19"
+    LR_Covid19()
+    document.getElementById("description").innerHTML= "Based on the graph above, it is observed that as the number of Covid-19 cases increase, the amount of sales decreases. We can attribute this pattern to the fact that most people avoided going out during the pandemic, especially during the lockdown period where most of us were unable to leave our homes. This causes the usage of cars to decrease significantly, which in turn decreases the need for their cars to be repaired."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "independent variable: “Number of covid cases”"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2020-2022\n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of Confirmed Covid cases, monthly from 2020 Jan - 2022 Dec"
+    createTable(a,b,c,d)
+
+  if val == "LR_License":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_License"
+    LR_License()
+    document.getElementById("description").innerHTML= "Based on the graph above, as the number of people obtaining their 3 and 3A driver's license increases, the amount of sales increases as well. From this result, we can infer that more people would be driving cars/driving more often due to the obtaining of their licenses. Therefore, this results in a higher probability of the car being worn down or in unfortunate cases, getting into accidents, which increases the need for them to bring their vehicles to the workshop for repair services."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "independent variable: “number of licenses”"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2014-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp x-axis: Number of licenses from Class 3A and 3, from year 2014-2020"
+    createTable(a,b,c,d)
+
+  if val == "LR_Accident":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Accident"
+    LR_Accident()
+    document.getElementById("description").innerHTML= "We decided to perform Linear Regression to see if there was a correlation between the number of injuries/casualties incurred from car accidents and the sales amount. However, based on the results of our analysis, we can conclude that there is no significant relationship between these 2 variables."
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "independent variable: “Number of injuries”"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of Injuries incurred from Car accidents, monthly from 2015 Jan to 2020 Dec"
+    createTable(a,b,c,d)
+
+  if val == "LR_Sentiment":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "LR_Sentiment"
+    LR_Sentiment()
+    document.getElementById("description").innerHTML= "Above shows a heat map, a two-dimensional representation of data in which values are represented by colours, in this case light yellow to dark blue. We have performed sentiment analysis on the Google Reviews data of PRO-JEX that we have collected. By observing the Service Sales column, we believe that the emotions that have the closer relation to Service Sales amount are fear, surprise and negative. Although based on our sentiment analysis, the top common words are mostly positive, it is possible that comments that express fear, surprise and negative emotions in general may have an impact on PRO-JEX's sales"
+
+    a = "Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "Independent variable: “Sentiment Scores”"
+    d = "Data: Y-axis: Sentiment Scores derived from all Google Reviews on PRO-JEX \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "General_Sentiment_workshop":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "General_Sentiment_workshop"
+    generalSentimentWorksop()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Vertical Bar Graphs Showing the Count of Emotions Towards Workshops in General"
+    b = "Goal: Identify General Sentiments"
+    c = "Independent variable:  - "
+    d = "Data:Y-axis: Emotions In NRCLex Library \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  X-axis: Count"
+    createTable(a,b,c,d)
+
+  if val == "General_Sentiment_SG":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "General_SentimentSG"
+    generalSentimentSG()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Vertical Bar Graphs Showing the Count of Emotions Towards Singapore’s Workshops"
+    b = "Goal: Identify General Sentiments and Compare it with that of Malaysia "
+    c = "Independent variable:  - "
+    d = "Data:Y-axis: Emotions In NRCLex Library \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Count"
+    createTable(a,b,c,d)
+
+  if val == "General_Sentiment_ML":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "General_SentimentML"
+    generalSentimentML()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Vertical Bar Graphs Showing the Count of Emotions Towards Malaysia’s Workshops"
+    b = "Goal: Identify General Sentiments and Compare it with that of Singapore "
+    c = "Independent variable:  - "
+    d = "Data:Y-axis: Motor Vehicle Population By Type Of Vehicle (Monthly) from 2014-2022 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Service Sales of PRO-JEX from 2014-2022"
+    createTable(a,b,c,d)
+
+  if val == "top10wordsEntireDataset":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words Entire Dataset"
+    top10wordsEntireDataset()
+    document.getElementById("description").innerHTML= ""
+
+    a = "10 Most Common Words Associated with Workshops in General"
+    b = "Goal: Identify The Popular Topics that are Closely Related with Workshops in General"
+    c = "Independent variable: “ - ”"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Words"
+    createTable(a,b,c,d)
+
+  if val == "top10wordsSG":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words SG"
+    top10wordsSG()
+    document.getElementById("description").innerHTML= ""
+
+    a = "10 Most Common Words Associated with Singapore’s Workshops"
+    b = "Goal: Identify The Popular Topics that are Closely Related with Singapore’s workshops"
+    c = "Independent variable: “ - ”"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp X-axis: Words"
+    createTable(a,b,c,d)
+
+  if val == "top10wordsML":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Top10 words ML"
+    top10wordsML()
+    document.getElementById("description").innerHTML= ""
+
+    a = "10 Most Common Words Associated with Malaysia’s Workshops"
+    b = "Goal: Identify The Popular Topics that are Closely Related with Malaysia’s workshops"
+    c = "Independent variable: “ - ”"
+    d = "Data:Y-axis: Count of Words \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspX-axis: Words"
+    createTable(a,b,c,d)
+############%%%
+  if val == "wordCloudGeneral":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "wordCloudGeneral"
+    wordCloudGeneral()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Word Cloud Showing the Common Words Associated with Workshops in General"
+    b = "Goal: Provide an Overview of The Popular Topics that are Closely Related with Workshops in General "
+    c = "Independent variable: “ - ”"
+    d = "-"
+    createTable(a,b,c,d)
+
+  if val == "wordCloudSG":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "wordCloudSG"
+    wordCloudSG()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Word Cloud Showing the Common Words Associated with Singapore’s Workshops"
+    b = "Goal: Provide an Overview of The Popular Topics that are Closely Related with Workshops in Singapore "
+    c = "Independent variable: “ - ”"
+    d = "-"
+    createTable(a,b,c,d)
+
+  if val == "wordCloudML":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "wordCloudML"
+    wordCloudML()
+    document.getElementById("description").innerHTML= ""
+
+    a = "Word Cloud Showing the Common Words Associated with Malaysia’s Workshops"
+    b = "Goal: Provide an Overview of The Popular Topics that are Closely Related with Workshops in Malaysia "
+    c = "Independent variable: “ - ”"
+    d = "-"
+    createTable(a,b,c,d)
+
+search()
+</py-script>
+</body>
+</html>

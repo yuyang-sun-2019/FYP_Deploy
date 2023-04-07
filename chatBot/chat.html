@@ -12,6 +12,7 @@
     - openpyxl
     - paths:
        - ./dataX.xlsx
+       - ./endChatwords.xlsx
 </py-env>
 <div id='bodybox'>
   <div id='chatborder'>
@@ -96,7 +97,15 @@ def getKeyWord1(sentence):
         if keyWord in sentence:
             return keyWord
     return None
-
+def endchatword(sent):
+  endChatWordList = pd.read_excel('endChatwords.xlsx')
+  for index, row in endChatWordList.iterrows():
+      row['phrase']=str(row['phrase']).lower()
+  endChatWordList = endChatWordList['phrase'].tolist()
+  for word in endChatWordList:
+      if word == sent:
+          return True
+  return False
 
 def stochasticRecommender(df):
   df=df.drop_duplicates()
@@ -139,9 +148,9 @@ def startChat(*args,**kwargs):
       user_response=user_response.lower()
 
 
-      if(user_response =="done" or user_response =="exit" or user_response =="bye" ):
+      if(endchatword(user_response)):
           p = document.createElement('p');
-          p.innerHTML = 'ROBO:Please restart your chart or whatsapp call our customer service office at '
+          p.innerHTML = 'ROBO:Thank you for your patience. Please whatsapp call our customer service office at '
           a = document.createElement('a');
           desiredLink="http://wa.me/86687676"
           a.setAttribute('href',desiredLink)
@@ -189,9 +198,9 @@ def startChat(*args,**kwargs):
         document.getElementById('chatlog'+str(cntInput)).innerHTML="Customer:"+user_response1
         user_response1=user_response1.lower()
         user_response=  document.getElementById('keys').innerHTML.split()[0]
-        if(user_response1 =="done" or user_response1 =="exit" or user_response1 =="bye" ):
+        if(endchatword(user_response1)):
             p = document.createElement('p');
-            p.innerHTML = 'ROBO:Please restart your chart or click here for our '
+            p.innerHTML = 'ROBO:Thanks for your patience. Click here for our '
             a = document.createElement('a');
             desiredLink="https://fyp6men.herokuapp.com/chatBot/availableCarModelService.html"
             a.setAttribute('href',desiredLink)
