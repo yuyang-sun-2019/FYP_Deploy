@@ -145,7 +145,7 @@ def LR_mlp():
 
     fig.tight_layout()
 
-    for ii in np.arange(0, 10, 1):
+    <!-- for ii in np.arange(0, 10, 1):
         ax1.view_init(elev=28, azim=ii)
         ax2.view_init(elev=4, azim=ii)
         ax3.view_init(elev=60, azim=ii)
@@ -154,30 +154,10 @@ def LR_mlp():
     for ii in np.arange(0, 10, 1):
         image = imageio.imread(f'./fig/gif_image{ii}.png')
         frames.append(image)
-        imageio.mimsave('./fig/mlr.gif',frames,fps = 5)
+        imageio.mimsave('./fig/mlr.gif',frames,fps = 5) -->
     document.getElementById("dashboard").src = "./fig/mlr.gif"
 
-    import asyncio
-    from js import console, document, window, Blob
-    from pyodide import to_js
 
-async def save_file(buf):
-        try:
-                # Read and convert to a JavaScript array
-                buf.seek(0)
-                content = to_js(buf.read())
-
-                # Create a JavaScript Blob and set the Blob type as a PNG
-                b = Blob.new([content], {type: "image/png"})
-
-                # Perform the actual file system save
-                fileHandle = await window.showSaveFilePicker()
-                file = await fileHandle.createWritable()
-                await file.write(b)
-                await file.close()
-        except Exception as e:
-                console.log('Exception: ' + str(e))
-                return
 def createTable(a,b,c,d):
       tbl = document.createElement('table')
       tbl.setAttribute('border', '1')
