@@ -68,7 +68,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Customer Reviews</h5>
                             <p class="card-text">Find out how your company has been reviewed.</p>
-                            <a href="https://fyp6men.herokuapp.com/salesForecasting/link_page.html" class="btn btn-outline-light" onclick="setGeo()">Lets go</a>
+                            <a href="https://fyp6men.herokuapp.com/link_page_customer.html" class="btn btn-outline-light" onclick="setGeo()">Lets go</a>
                         </div>
 
                     </div>
