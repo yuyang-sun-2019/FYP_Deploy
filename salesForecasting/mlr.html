@@ -154,6 +154,7 @@ def LR_mlp():
         image = imageio.imread(f'./fig/gif_image{ii}.png')
         frames.append(image)
         imageio.mimsave('./fig/mlr.gif',frames,fps = 5) -->
+    document.getElementById("dashboard").src = ""
     document.getElementById("dashboard").src = "./fig/mlr.gif"
 
 def LR_mlp2():
@@ -236,7 +237,7 @@ def LR_mlp2():
 
   fig.tight_layout()
   pyscript.write("dashboard",fig)
-
+  document.getElementById("dashboard").src = ""
   document.getElementById("dashboard").src = "./fig/v2.gif"
 
 def createTable(a,b,c,d):
