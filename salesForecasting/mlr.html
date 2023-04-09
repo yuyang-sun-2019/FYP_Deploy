@@ -29,14 +29,15 @@
        - ./COE_data.xlsx
        - ./Covid-19_SG.xlsx
        - ./Accidents.xlsx
-       - ./fig/tes.gif
+       - ./fig/mlr.gif
+       - ./fig/mlr2.gif
 </py-env>
 <body >
   <label for="charts">Choose charts:</label>
 
   <select name="charts" id="charts">
     <option value="Multi-LinearRegression" selected="selected">Multi-LinearRegression</option>
-    <option value="-">-</option>
+    <option value="Multi-LinearRegression2">Multi-LinearRegression2</option>
 
   </select>
   <button id="search" type="button" pys-onClick="search"> Search </button>
@@ -143,7 +144,7 @@ def LR_mlp():
     fig.suptitle('$R^2 = %.2f$' % r2, fontsize=20)
 
     fig.tight_layout()
-
+    #pyscript.write("dashboard",fig)
     <!-- for ii in np.arange(0, 10, 1):
         ax1.view_init(elev=28, azim=ii)
         ax2.view_init(elev=4, azim=ii)
@@ -156,6 +157,88 @@ def LR_mlp():
         imageio.mimsave('./fig/mlr.gif',frames,fps = 5) -->
     document.getElementById("dashboard").src = "./fig/mlr.gif"
 
+def LR_mlp2():
+  injuries = pd.read_excel('Accidents.xlsx', sheet_name="injuries")
+  injuries = injuries.drop(index=[0,1,2,3,4,5], axis=0)
+  injuries.index = range(len(injuries))
+  sales = pd.read_excel('Accidents.xlsx', sheet_name="sales")
+  sales = sales.dropna()
+  sales.index = range(len(sales))
+  sales = sales.drop(index=[7,8], axis=0)
+  car_pop = pd.read_excel('motorvehiclepop2014_2022.xlsx', sheet_name="Sheet3")
+  combined = {'Injuries': injuries['no_of_injuries'],
+           'Sales': sales['sales']}
+
+  combined_df = pd.DataFrame(combined)
+  combined_df['Population'] = car_pop['Population']
+  scaler = MinMaxScaler()
+
+  df_scaled = scaler.fit_transform(combined_df.to_numpy())
+  df_scaled = pd.DataFrame(df_scaled, columns=['Injuries', 'Sales', 'Population'])
+  X = df_scaled[['Injuries', 'Population']]
+  y = df_scaled['Sales']
+  regr = linear_model.LinearRegression()
+  regr.fit(X, y)
+  x = df_scaled['Injuries'], df_scaled['Population']
+  y = df_scaled['Sales']
+
+  pearsons_coefficient = np.corrcoef(x, y)
+  pearsons_coefficient[0][1]
+  r_squared = regr.score(X, y)
+
+  X = df_scaled[['Injuries', 'Population']].values.reshape(-1,2)
+  Y = df_scaled['Sales']
+  x = X[:, 0]
+  y = X[:, 1]
+  z = Y
+
+  x_pred = np.linspace(0, 1, 30)   # range of injuries values
+  y_pred = np.linspace(0, 1, 30)  # range of licenses values
+  xx_pred, yy_pred = np.meshgrid(x_pred, y_pred)
+  model_viz = np.array([xx_pred.flatten(), yy_pred.flatten()]).T
+
+
+  ols = linear_model.LinearRegression()
+  model = ols.fit(X, Y)
+  predicted = model.predict(model_viz)
+
+  r2 = model.score(X, Y)
+  plt.style.use('default')
+
+  fig = plt.figure(figsize=(12, 4))
+
+  ax1 = fig.add_subplot(131, projection='3d')
+  ax2 = fig.add_subplot(132, projection='3d')
+  ax3 = fig.add_subplot(133, projection='3d')
+
+  axes = [ax1, ax2, ax3]
+
+  for ax in axes:
+      ax.plot(x, y, z, color='k', zorder=15, linestyle='none', marker='o', alpha=0.5)
+      ax.scatter(xx_pred.flatten(), yy_pred.flatten(), predicted, facecolor=(0,0,0,0), s=20, edgecolor='#70b3f0')
+      ax.set_xlabel('no. of Injuries', fontsize=12)
+      ax.set_ylabel('Population', fontsize=12)
+      ax.set_zlabel('Sales', fontsize=12)
+      ax.locator_params(nbins=4, axis='x')
+      ax.locator_params(nbins=5, axis='x')
+
+  ax1.text2D(0.2, 0.32, 'aegis4048.github.io', fontsize=13, ha='center', va='center',
+             transform=ax1.transAxes, color='grey', alpha=0.5)
+  ax2.text2D(0.3, 0.42, 'aegis4048.github.io', fontsize=13, ha='center', va='center',
+             transform=ax2.transAxes, color='grey', alpha=0.5)
+  ax3.text2D(0.85, 0.85, 'aegis4048.github.io', fontsize=13, ha='center', va='center',
+             transform=ax3.transAxes, color='grey', alpha=0.5)
+
+  ax1.view_init(elev=28, azim=120)
+  ax2.view_init(elev=4, azim=114)
+  ax3.view_init(elev=60, azim=165)
+
+  fig.suptitle('$R^2 = %.2f$' % r2, fontsize=20)
+
+  fig.tight_layout()
+  #pyscript.write("dashboard",fig)
+
+  document.getElementById("dashboard").src = "./fig/mlr2.gif"
 
 def createTable(a,b,c,d):
       tbl = document.createElement('table')
@@ -176,7 +259,7 @@ def createTable(a,b,c,d):
 
       tr = document.createElement('tr')
       td = document.createElement('td')
-      td.innerText = "Independent variable: “Car population”"
+      td.innerText = c
       tr.appendChild(td)
       tbdy.appendChild(tr)
 
@@ -202,8 +285,20 @@ def search(*args,**kwargs):
 
     a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
     b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
-    c = "independent variable: “Number of injuries”"
-    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of Injuries incurred from Car accidents, monthly from 2015 Jan to 2020 Dec"
+    c = "independent variable: “Number of injuries” , “Number of licenses”"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of license \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp z-axis: Number of injuries"
+    createTable(a,b,c,d)
+
+  if val == "Multi-LinearRegression2":
+    document.getElementById("intro").innerHTML=""
+    document.getElementById("title").innerHTML= "Multi-LinearRegression2"
+    LR_mlp2()
+    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+
+    a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
+    b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
+    c = "independent variable: “Number of injuries”,“Car population”"
+    d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp x-axis: Population \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp z-axis: Number of Injuries"
     createTable(a,b,c,d)
 
 
