@@ -29,8 +29,7 @@
        - ./COE_data.xlsx
        - ./Covid-19_SG.xlsx
        - ./Accidents.xlsx
-       - ./fig/mlr.gif
-       - ./fig/mlr2.gif
+
 </py-env>
 <body >
   <label for="charts">Choose charts:</label>
@@ -236,7 +235,7 @@ def LR_mlp2():
   fig.suptitle('$R^2 = %.2f$' % r2, fontsize=20)
 
   fig.tight_layout()
-  #pyscript.write("dashboard",fig)
+  pyscript.write("dashboard",fig)
 
   document.getElementById("dashboard").src = "./fig/mlr2.gif"
 
