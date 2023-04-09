@@ -24,9 +24,6 @@
     <div id='navbar'>
         <navbar></navbar>
     </div>
-    <div id='jumbotron'>
-        <jumbotron></jumbotron>
-    </div>
     <br>
 
 
