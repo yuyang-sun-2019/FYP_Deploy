@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Link Page</title>
+    <style>
+        .container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+        }
+        .button-container {
+          display: flex;
+          justify-content: center;
+        }
+        .button {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin: 0 10px;
+        }
+      </style>
+  </head>
+
+  <body>
+    <div class="container">
+        <h1>Sentiment Analysis/Word Cloud</h1>
+        <p>Click on the buttons below to go to other pages:</p>
+
+        <div class="button-container">
+
+        <div class="button">
+          <button onclick="window.location.href='https://fyp6men.herokuapp.com/general_sentiments.php'">
+            <img src="../images/regression.png" alt="Linear Regression" width="200" height="200">
+          </button>
+          <span>General Sentiments</span>
+        </div>
+
+        <div class="button">
+          <button onclick="window.location.href='https://fyp6men.herokuapp.com/salesForecasting/forcasting.html'">
+            <img src="../images/Forecast.png" alt="MLR" width="200" height="200">
+          </button>
+          <span>Word Cloud Analysis</span>
+        </div>
+
+    </div>
+  </body>
+</html>
