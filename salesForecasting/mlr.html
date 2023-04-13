@@ -286,10 +286,10 @@ def search(*args,**kwargs):
     document.getElementById("intro").innerHTML=""
     document.getElementById("title").innerHTML= "Multi-LinearRegression"
     LR_mlp()
-    document.getElementById("t").innerHTML= "General for description"
+
     document.getElementById("t1").innerHTML= "License vs Injuries vs Car Population"
     document.getElementById("t2").innerHTML= "Sales, Injuries, Licenses"
-    document.getElementById("description").innerHTML= "The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
+    document.getElementById("description").innerHTML= ""
 
     document.getElementById("description1").innerHTML= "From the planes in the diagram, we can see that there is no clear relationship between the Car population and the number of injuries. However, there is a slight downward trend between the number of licenses and injuries.\
     Based on the low r2 and adjusted r2 scores, we can infer that there is no strong correlation between these 3 variables and the model might not be a good fit for the data as it does not capture the complexity of the relationships well enough."
@@ -299,7 +299,7 @@ def search(*args,**kwargs):
     Overall, the combination of the number of licenses and injuries moderately affects the amount of sales."
 
 
-    a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
+    a = "MLR: The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
     b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "independent variable: “Number of injuries” , “Number of licenses”"
     d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp  x-axis: Number of license \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp z-axis: Number of injuries"
@@ -309,10 +309,10 @@ def search(*args,**kwargs):
     document.getElementById("intro").innerHTML=""
     document.getElementById("title").innerHTML= "Multi-LinearRegression2"
     LR_mlp2()
-    document.getElementById("t").innerHTML= "General for description"
+    document.getElementById("t").innerHTML= ""
     document.getElementById("t1").innerHTML= "Sales vs Injuries vs Car Population"
     document.getElementById("t2").innerHTML= ""
-    document.getElementById("description").innerHTML= "The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
+    document.getElementById("description").innerHTML= ""
 
     document.getElementById("description1").innerHTML= "From the planes in the diagram, there is a downward trend between sales and car population, and a slight upward trend for injuries and sales.\
     As there is a high r2 and adjusted r2 score, coupled with a low MSE score, this model shows that there is a strong degree of correlation between the 3 variables.\
@@ -320,7 +320,7 @@ def search(*args,**kwargs):
 
     document.getElementById("description2").innerHTML= ""
 
-    a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
+    a = "MLR: The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
     b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
     c = "independent variable: “Number of injuries”,“Car population”"
     d = "data: y-axis: Service Sales of PRO-JEX from 2015-2020 \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp x-axis: Population \n&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp z-axis: Number of Injuries"
