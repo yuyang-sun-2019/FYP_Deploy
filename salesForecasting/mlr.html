@@ -46,7 +46,12 @@
    <h2 id="title"></h2>
    <div id="intro" style="text-align:left"></div>
    <img id ="dashboard" src="" />
+   <b id="t" style="text-align:left"></b>
    <p id="description" style="text-align:left"></p>
+   <b id="t1" style="text-align:left"></b>
+   <p id="description1" style="text-align:left"></p>
+   <b id="t2" style="text-align:left"></b>
+   <p id="description2" style="text-align:left"></p>
  </div>
  <center>
 </div>
@@ -95,7 +100,7 @@ def LR_mlp():
     pearsons_coefficient = np.corrcoef(x, y)
     pearsons_coefficient[0][1]
 
-#### watch out errror
+
     X = df_scaled[['Injuries', 'Licenses']].values.reshape(-1,2)
     Y = df_scaled['Sales']
     x = X[:, 0]
@@ -281,7 +286,18 @@ def search(*args,**kwargs):
     document.getElementById("intro").innerHTML=""
     document.getElementById("title").innerHTML= "Multi-LinearRegression"
     LR_mlp()
-    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+    document.getElementById("t").innerHTML= "General for description"
+    document.getElementById("t1").innerHTML= "License vs Injuries vs Car Population"
+    document.getElementById("t2").innerHTML= "Sales, Injuries, Licenses"
+    document.getElementById("description").innerHTML= "The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
+
+    document.getElementById("description1").innerHTML= "From the planes in the diagram, we can see that there is no clear relationship between the Car population and the number of injuries. However, there is a slight downward trend between the number of licenses and injuries.\
+    Based on the low r2 and adjusted r2 scores, we can infer that there is no strong correlation between these 3 variables and the model might not be a good fit for the data as it does not capture the complexity of the relationships well enough."
+
+    document.getElementById("description2").innerHTML= "From the planes in the diagram, there is an upward trend between the number of licenses and sales, and a slight downward trend between injuries and sales.\
+    As there is a moderate r2 score and a low adjusted r2 score, it means that there is a moderate degree of correlation between the variables, but there is still a significant amount of variation in the data that is not captured.\
+    Overall, the combination of the number of licenses and injuries moderately affects the amount of sales."
+
 
     a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
     b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
@@ -293,7 +309,16 @@ def search(*args,**kwargs):
     document.getElementById("intro").innerHTML=""
     document.getElementById("title").innerHTML= "Multi-LinearRegression2"
     LR_mlp2()
-    document.getElementById("description").innerHTML= "Based on the graph above, the relationship observed is that as the car population decreases, service sales increases. However, looking at the car population data for the past 2 years, it has been on a gradual increase.One possible conclusion after analysing car population with relation to the increasing COE prices in recent years (our other independent variable),  car population might not accurately reflect the type of cars that would usually patronise PRO-JEX, as the data used consisted of private and company cars. Hence, it is possible that as COE prices increase, less new cars are being purchased for __ use, as well as referencing the rapidly growing second-hand car market in Singapore, more people are choosing to keep their current or older cars or purchasing a second-hand car instead. Since older cars are likely to gradually work less efficiently, they would need more maintenance, which explains the possible increase in service sales of PRO-JEX."
+    document.getElementById("t").innerHTML= "General for description"
+    document.getElementById("t1").innerHTML= "Sales vs Injuries vs Car Population"
+    document.getElementById("t2").innerHTML= ""
+    document.getElementById("description").innerHTML= "The 3D diagram provides a clearer interpretation of the relationships between the variables and how they interact with each other. By looking at the different sides of the plane, we are able to determine the relationship between the variables."
+
+    document.getElementById("description1").innerHTML= "From the planes in the diagram, there is a downward trend between sales and car population, and a slight upward trend for injuries and sales.\
+    As there is a high r2 and adjusted r2 score, coupled with a low MSE score, this model shows that there is a strong degree of correlation between the 3 variables.\
+    This means that car population and the number of injuries are significant factors that will affect the sales amount."
+
+    document.getElementById("description2").innerHTML= ""
 
     a = "Multi-Linear Regression Analysis Using service sales data against various independent variables."
     b = "Goal: Identify correlation between service sales and independent variables.\n &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspIdentify how service sales changes against independent variables "
